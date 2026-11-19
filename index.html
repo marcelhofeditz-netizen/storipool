@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Storipool – Veröffentliche dein Buch mit KI</title>
+<meta name="description" content="Deine KI kennt dein Leben. Storipool macht ein Buch daraus – mit Cover, Hörbuch und einem Platz im Regal.">
+<meta property="og:title" content="Storipool – Veröffentliche dein Buch mit KI">
+<meta property="og:description" content="Deine KI kennt dein Leben. Storipool macht ein Buch daraus – in wenigen Schritten.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%2315171C'/%3E%3Cg fill='none' stroke='%23F2B544' stroke-width='2'%3E%3Crect x='6' y='8' width='5' height='17' rx='1'/%3E%3Crect x='13' y='6' width='5' height='19' rx='1'/%3E%3Cpath d='M4 27h24'/%3E%3C/g%3E%3C/svg%3E">
+
+<style>
+*{box-sizing:border-box}
+:root{--bg:#15171C;--panel:#1E2128;--panel2:#1B1D23;--line:#2E323B;--ink:#F3F1EC;--mute:#C9CDD4;--mute2:#A9AEB8;--accent:#F2B544}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:var(--accent)}a:hover{color:#FFD27A}
+.serif{font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif}
+.wrap{max-width:1240px;margin:0 auto;padding:0 24px}
+header .wrap{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;padding-top:20px;padding-bottom:20px}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink)}
+.logo span{font-size:24px;font-weight:600}
+nav{display:flex;flex-wrap:wrap;align-items:center;gap:20px;font-size:15px}
+nav a{color:#D5D8DE;text-decoration:none}
+.btn{display:inline-flex;align-items:center;min-height:44px;padding:12px 22px;border-radius:999px;font-weight:600;font-size:16px;text-decoration:none;border:0;cursor:pointer;font-family:inherit}
+.btn-primary{background:var(--accent);color:#15171C}.btn-primary:hover{color:#15171C;background:#FFC65C}
+.btn-ghost{background:transparent;color:var(--ink);border:1px solid #4A4F5A;font-weight:500}.btn-ghost:hover{color:var(--ink);border-color:#8A8F99}
+.hero{max-width:760px;margin:0 auto;padding:40px 24px 28px;text-align:center}
+.hero h1{margin:0;font-size:40px;line-height:1.12;font-weight:600}
+.hero p{margin:12px auto 0;font-size:17px;line-height:1.5;color:var(--mute);max-width:560px}
+.row{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:22px}
+.bar{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font:inherit;font-size:14px;font-weight:500;padding:10px 16px;min-height:44px;border-radius:999px;cursor:pointer;background:transparent;color:#D5D8DE;border:1px solid #4A4F5A}
+.chip[aria-pressed="true"]{background:var(--ink);color:#15171C;border-color:var(--ink)}
+.note{margin:0;font-size:13px;color:var(--mute2)}
+.sel{display:none;flex-wrap:wrap;gap:20px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:16px}
+.sel.on{display:flex}
+.sel .info{flex:1 1 260px;min-width:0}
+.sel .kind{margin:0;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent)}
+.sel h2{margin:4px 0;font-size:24px;font-weight:600}
+.sel .by{margin:0;font-size:14px;color:var(--mute2)}
+.shelf{background:var(--panel2);border-radius:16px;padding:20px 16px 4px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:18px 14px}
+.book{background:none;border:0;padding:0;font:inherit;color:inherit;cursor:pointer;display:flex;flex-direction:column;gap:6px;text-align:left;min-width:0}
+.cover{aspect-ratio:2/3;width:100%;border-radius:3px 7px 7px 3px;padding:10px 9px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:inset 4px 0 0 rgba(0,0,0,.18);transition:transform .15s}
+.book:hover .cover{transform:translateY(-4px)}
+.book.active .cover{outline:2px solid var(--accent);outline-offset:3px}
+.cover .t{font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;font-size:13px;font-weight:600;line-height:1.15}
+.cover .k{font-size:9px;letter-spacing:1px;text-transform:uppercase;opacity:.85;display:flex;justify-content:space-between;align-items:center}
+.book .a{font-size:12px;color:var(--mute2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.board{height:12px;background:#7A5436;border-radius:3px;margin:18px -4px 12px;box-shadow:inset 0 -3px 0 #5A3C26}
+.big{flex:0 0 auto;width:72px}
+section.block{padding-top:88px}
+.eyebrow{margin:0 0 10px;color:var(--accent);font-size:14px;font-weight:600;letter-spacing:2px;text-transform:uppercase}
+h2.h{margin:0;font-size:40px;font-weight:600;max-width:760px;line-height:1.15}
+.lead{margin:14px 0 40px;font-size:18px;line-height:1.55;color:var(--mute);max-width:720px}
+.steps{display:flex;flex-direction:column;gap:16px}
+.step{display:flex;flex-wrap:wrap;gap:24px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:24px}
+.step .l{flex:1 1 340px;min-width:0;display:flex;gap:18px;align-items:flex-start}
+.num{flex:0 0 auto;width:44px;height:44px;border-radius:999px;background:var(--accent);color:#15171C;font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;font-size:22px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.step h3{margin:0 0 6px;font-size:20px;font-weight:600}
+.step p{margin:0;font-size:16px;line-height:1.55;color:var(--mute)}
+.chat{flex:1 1 340px;min-width:0;display:flex;flex-direction:column;gap:8px}
+.you{align-self:flex-end;max-width:92%;background:var(--accent);color:#15171C;padding:10px 14px;border-radius:14px 14px 4px 14px;font-size:15px;line-height:1.45}
+.ai{align-self:flex-start;max-width:92%;background:#2A2E37;color:var(--ink);padding:10px 14px;border-radius:14px 14px 14px 4px;font-size:15px;line-height:1.45}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:32px}
+.card h2{margin:14px 0 8px;font-size:30px;font-weight:600}
+.card p{margin:0;font-size:16px;line-height:1.6;color:var(--mute)}
+.three{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.mini{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px}
+.mini h3{margin:0;font-size:17px;font-weight:600}.mini p{margin:6px 0 0;font-size:15px;color:var(--mute)}
+.final{padding:104px 24px 88px;text-align:center}
+.final h2{margin:0 auto;max-width:760px;font-size:44px;font-weight:600;line-height:1.1}
+footer{border-top:1px solid var(--line);margin-top:24px}
+footer .wrap{padding-top:28px;padding-bottom:28px;display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;font-size:14px;color:var(--mute2)}
+footer a{color:var(--mute2)}
+@media (max-width:640px){.hero h1{font-size:32px}h2.h{font-size:30px}.final h2{font-size:32px}nav{gap:14px}}
+</style>
+</head>
+<body>
+<header>
+<div class="wrap">
+<a class="logo" href="/">
+<svg width="30" height="30" viewBox="0 0 32 32" aria-hidden="true" fill="none" stroke="#F2B544" stroke-width="2"><rect x="4" y="6" width="5" height="20" rx="1"/><rect x="11" y="4" width="5" height="22" rx="1"/><rect x="18" y="8" width="5" height="18" rx="1" transform="rotate(-12 20 17)"/><path d="M2 28h28"/></svg>
+<span class="serif">Storipool</span>
+</a>
+<nav aria-label="Hauptnavigation">
+<a href="#regal">Bücherregal</a>
+<a href="#so-gehts">So geht's</a>
+<a class="btn btn-primary" href="#start">Buch schreiben</a>
+</nav>
+</div>
+</header>
+
+<main>
+<section class="hero">
+<h1 class="serif">Veröffentliche dein Buch mit KI.</h1>
+<p>Deine KI kennt dein Leben. Storipool macht ein Buch daraus – in wenigen Schritten.</p>
+<div class="row">
+<a class="btn btn-primary" href="#start">Mein Buch schreiben</a>
+<a class="btn btn-ghost" href="#regal">Bücher lesen und hören</a>
+</div>
+</section>
+
+<section id="regal" class="wrap">
+<div class="bar">
+<div class="chips" role="group" aria-label="Nach Art filtern" id="chips"></div>
+<p class="note">Alle Titel sind Beispiele. Die ersten echten Bücher folgen bald.</p>
+</div>
+<div class="sel" id="sel" aria-live="polite">
+<div class="big"><div class="cover" id="selCover"><span class="t" id="selT2"></span></div></div>
+<div class="info">
+<p class="kind" id="selKind"></p>
+<h2 class="serif" id="selTitle"></h2>
+<p class="by" id="selBy"></p>
+</div>
+<p class="note">Lesen und Anhören kommen mit dem Start.</p>
+</div>
+<div class="shelf">
+<div class="grid" id="grid"></div>
+<div class="board"></div>
+</div>
+</section>
+
+<section id="so-gehts" class="wrap block">
+<p class="eyebrow">So schreibst du dein Buch</p>
+<h2 class="h serif">Die KI kennt deine Geschichte schon. Storipool macht ein Buch daraus.</h2>
+<p class="lead">Am stärksten wird es, wenn die KI zusammenfasst, was du bis jetzt mit ihr erlebt und besprochen hast. Du kannst aber auch bei null anfangen.</p>
+<div class="steps" id="steps"></div>
+</section>
+
+<section class="wrap block">
+<div class="two">
+<div class="card">
+<svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="#F2B544" stroke-width="1.8"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
+<h2 class="serif">Schreiben</h2>
+<p>Storipool fragt nach wie ein guter Lektor: Wo beginnt deine Geschichte? Was war der Wendepunkt? Wer hat dich verändert? Kapitel für Kapitel, bis es sich richtig anfühlt.</p>
+</div>
+<div class="card">
+<svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="#F2B544" stroke-width="1.8"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><rect x="3" y="15" width="4" height="6" rx="1.5"/><rect x="17" y="15" width="4" height="6" rx="1.5"/></svg>
+<h2 class="serif">Lesen und hören</h2>
+<p>Stöbere im Regal, lies im Browser oder lass dir jedes Buch von einer KI-Stimme vorlesen. Oder frag deine KI: „Such mir eine Geschichte über einen Neuanfang.“</p>
+</div>
+</div>
+</section>
+
+<section class="wrap block">
+<h2 class="serif" style="margin:0 0 20px;font-size:32px;font-weight:600">Du entscheidest, wer es liest</h2>
+<div class="three">
+<div class="mini"><h3>Privat</h3><p>Nur für dich, als Archiv deines Lebens.</p></div>
+<div class="mini"><h3>Familie und Freunde</h3><p>Per Link teilen oder gedruckt verschenken.</p></div>
+<div class="mini"><h3>Öffentlich im Regal</h3><p>Namen anderer Menschen macht die KI vorher unkenntlich.</p></div>
+</div>
+</section>
+
+<section id="start" class="final">
+<h2 class="serif">Dein Buch ist schon in deinen Chats. Hol es raus.</h2>
+<p style="margin:16px auto 0;font-size:17px;color:var(--mute);max-width:560px">Storipool startet bald. Trag dich ein, dann sagen wir dir Bescheid, sobald der Connector für Claude und ChatGPT bereit ist.</p>
+<div class="row" style="margin-top:28px">
+<a class="btn btn-primary" href="mailto:marcel@offmarketpool.com?subject=Warteliste%20Storipool&body=Ich%20m%C3%B6chte%20mein%20Buch%20mit%20Storipool%20ver%C3%B6ffentlichen.">Auf die Warteliste</a>
+</div>
+</section>
+</main>
+
+<footer>
+<div class="wrap">
+<span>© 2026 Storipool · Dr. Hofeditz Real Estate GmbH, Hamburg</span>
+<span style="display:flex;gap:20px"><a href="/impressum.html">Impressum</a><a href="/datenschutz.html">Datenschutz</a></span>
+</div>
+</footer>
+
+<script>
+(function(){
+var pal=[['#C2553D','#FFFFFF'],['#2F5D62','#FFFFFF'],['#E6D5B8','#1E2128'],['#1F3A5F','#FFFFFF'],['#D9A441','#1E2128'],['#6B4E71','#FFFFFF'],['#3E6B48','#FFFFFF'],['#8C3B3B','#FFFFFF'],['#B5838D','#1E2128'],['#5E6B73','#FFFFFF']];
+var raw=[['Das Jahr mit der Maschine','M., Hamburg','Lebensgeschichte'],['Zwei Uhr in Quito','S., Quito','Roman'],['Nachtschicht','K., Essen','Lebensgeschichte'],['Der zweite Anfang','J., Leipzig','Roman'],['Was in der Küche bleibt','A., Wien','Lebensgeschichte'],['Garage, Tag 1','T., München','Sachbuch'],['Gegen den Wind','L., Kiel','Lebensgeschichte'],['Das Mandat','R., Frankfurt','Roman'],['Sand und Glas','N., Dubai','Roman'],['Briefe an Paul','D., Berlin','Lebensgeschichte'],['Meisterstück','H., Kassel','Sachbuch'],['Lissabon im Regen','C., Lissabon','Roman'],['Mit 50 neu gelernt','B., Köln','Sachbuch'],['Die stille Firma','F., Stuttgart','Sachbuch'],['Am Ende der Linie 6','P., Bremen','Roman'],['Hof ohne Erben','G., Allgäu','Lebensgeschichte'],['Zwölf Umzüge','E., Dresden','Lebensgeschichte'],['Was Zahlen nicht sagen','V., Zürich','Sachbuch'],['Nordlicht','I., Tromsø','Roman'],['Der Laden an der Ecke','O., Hannover','Lebensgeschichte'],['Ein Jahr ohne Handy','U., Graz','Sachbuch'],['Wellen zählen','Y., Sylt','Roman'],['Mutter, Tochter, Firma','Z., Nürnberg','Lebensgeschichte'],['Kaffee um vier','W., Bonn','Roman']];
+var books=raw.map(function(r,i){var c=pal[i%pal.length];return{id:i,title:r[0],author:r[1],kind:r[2],audio:i%3!==2,bg:c[0],ink:c[1]};});
+var kinds=[['Alle','Alle'],['Lebensgeschichte','Lebensgeschichten'],['Roman','Romane'],['Sachbuch','Sachbücher'],['Hörbücher','Hörbücher']];
+var state={kind:'Alle',sel:null};
+var headphones='<svg width="11" height="11" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><rect x="3" y="15" width="4" height="6" rx="1.5"/><rect x="17" y="15" width="4" height="6" rx="1.5"/></svg>';
+function esc(s){return String(s).replace(/[&<>"]/g,function(m){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m];});}
+function short(k){return k==='Lebensgeschichte'?'Leben':k;}
+function renderChips(){var el=document.getElementById('chips');el.innerHTML='';kinds.forEach(function(k){var b=document.createElement('button');b.type='button';b.className='chip';b.textContent=k[1];b.setAttribute('aria-pressed',String(state.kind===k[0]));b.onclick=function(){state.kind=k[0];renderChips();renderGrid();};el.appendChild(b);});}
+function renderGrid(){var el=document.getElementById('grid');el.innerHTML='';books.filter(function(b){return state.kind==='Alle'||(state.kind==='Hörbücher'?b.audio:b.kind===state.kind);}).forEach(function(b){var btn=document.createElement('button');btn.type='button';btn.className='book'+(state.sel===b.id?' active':'');btn.setAttribute('aria-label',b.title+', '+b.kind+', von '+b.author+(b.audio?', mit Hörbuch':''));btn.innerHTML='<div class="cover" style="background:'+b.bg+';color:'+b.ink+'"><span class="t">'+esc(b.title)+'</span><span class="k"><span>'+short(b.kind)+'</span>'+(b.audio?headphones:'')+'</span></div><span class="a">'+esc(b.author)+'</span>';btn.onclick=function(){state.sel=b.id;showSel(b);renderGrid();};el.appendChild(btn);});}
+function showSel(b){var s=document.getElementById('sel');s.classList.add('on');var c=document.getElementById('selCover');c.style.background=b.bg;c.style.color=b.ink;document.getElementById('selT2').textContent=b.title;document.getElementById('selKind').textContent=b.kind+(b.audio?' · mit Hörbuch':'');document.getElementById('selTitle').textContent=b.title;document.getElementById('selBy').textContent=b.author;}
+var steps=[
+['Connector verbinden','Füge Storipool in Claude oder ChatGPT hinzu. Ein Klick, dann kennt deine KI den Weg zum Regal.','Verbinde dich mit Storipool.','Verbunden. Sollen wir dein Buch beginnen?'],
+['Deine Geschichte zusammenfassen lassen','Die KI fasst zusammen, was du bisher mit ihr erlebt und besprochen hast. Daraus entsteht der rote Faden.','Fasse zusammen, was du über mein Leben weißt.','Ich sehe drei große Linien: dein Neustart, die Gründung und die Familie. Womit fangen wir an?'],
+['Roman oder Sachbuch wählen','Erzählt als Roman, ehrlich als Lebensgeschichte oder als Sachbuch mit deinen Lehren. Storipool schlägt Aufbau und Kapitel vor.','Mach einen Roman daraus.','Hier ist ein Entwurf mit 12 Kapiteln. Kapitel 1 beginnt an dem Abend, an dem alles kippt.'],
+['Überarbeiten und Cover gestalten','Kapitel für Kapitel fragt Storipool nach, kürzt und schärft. Die KI entwirft dein Cover, du wählst aus.','Kapitel 3 ist zu lang. Und zeig mir Cover-Ideen.','Gekürzt. Hier sind vier Cover-Entwürfe.'],
+['Veröffentlichen','Ein Satz, und dein Buch steht im Regal – zum Lesen und als Hörbuch. Privat, für Freunde oder für alle.','Veröffentliche es öffentlich.','Fertig. Dein Buch steht jetzt im Storipool-Regal.']];
+var sEl=document.getElementById('steps');
+steps.forEach(function(s,i){var d=document.createElement('div');d.className='step';d.innerHTML='<div class="l"><span class="num">'+(i+1)+'</span><div><h3>'+esc(s[0])+'</h3><p>'+esc(s[1])+'</p></div></div><div class="chat"><div class="you">'+esc(s[2])+'</div><div class="ai">'+esc(s[3])+'</div></div>';sEl.appendChild(d);});
+renderChips();renderGrid();
+})();
+</script>
+</body>
+</html>
