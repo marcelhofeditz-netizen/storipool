@@ -1,0 +1,26 @@
+name: Hoerprobe holen
+on:
+  push:
+    paths: ['.github/workflows/audio.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: MP3 laden
+        run: |
+          curl -fsSL -o p1.mp3 "https://dnznrvs05pmza.cloudfront.net/eleven-v4/03fd6532-c0f6-4f79-8e38-ff2c06f029a0/Storipool_Hoerprobe_Rueckkehr_Prolog_1.mp3?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiNzk2OGUwOThiMmU5MTYyZiIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc5NTI1NTU3Nn0.WLVHHPsx-oCa2rW5RY6N1rZ9r0Wl7xvxSBp-DVPzrko"
+          curl -fsSL -o p2.mp3 "https://dnznrvs05pmza.cloudfront.net/eleven-v4/197d8444-1204-4263-90ea-8c68617d9071/Storipool_Hoerprobe_Rueckkehr_Prolog_2.mp3?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiYjNlMWNmOTZhMmMyNjA2MCIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc5NTI3NDAwNn0.qmXfDIt315dsnpqxF83f01qTn2IRHdd7ky0sclxFP8g"
+          sudo apt-get install -y -qq ffmpeg >/dev/null 2>&1 || true
+          if command -v ffmpeg >/dev/null; then printf "file 'p1.mp3'\nfile 'p2.mp3'\n" > l.txt; ffmpeg -loglevel error -y -f concat -safe 0 -i l.txt -ac 1 -b:a 64k die-rueckkehr-prolog.mp3; else cat p1.mp3 p2.mp3 > die-rueckkehr-prolog.mp3; fi
+          rm -f p1.mp3 p2.mp3 l.txt
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add die-rueckkehr-prolog.mp3
+          git commit -m "Hörprobe: Die Rückkehr – Prolog"
+          git push
