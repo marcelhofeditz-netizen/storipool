@@ -1,11 +1,11 @@
 (function(){
-var M=SPB.M,P=SPB.P,cover=SPB.cover,esc=SPB.esc,hpIcon=SPB.hpIcon,A=SPBApp;
+var M=SPB.M,P=SPB.P,cover=SPB.cover,esc=SPB.esc,hpIcon=SPB.hpIcon,A=SPBApp,MG=SPBMagic;
 var mine=[
- {id:'rueckkehr',title:'Die Rückkehr',sub:'Ein Jahr allein mit den Maschinen',author:'Dr. Marcel Hofeditz',genre:'Sachbuch · Hörbuch',cat:'sachbuch',motif:'pier',pal:P.rueckkehr,font:'serif',pos:'top',audio:true,
+ {id:'rueckkehr',age:12,title:'Die Rückkehr',sub:'Ein Jahr allein mit den Maschinen',author:'Dr. Marcel Hofeditz',genre:'Sachbuch · Hörbuch',cat:'sachbuch',motif:'pier',pal:P.rueckkehr,font:'serif',pos:'top',audio:true,
   blurb:['Ein Immobilienmakler aus Hamburg baut 2026 mit KI eine ganze Firma – allein. Eine Plattform, auf der Immobilien in ganz Europa gehandelt werden, eine eigene Steuersoftware, eine Belegschaft, die nicht schläft. Kein Ratgeber, sondern ein ehrliches Logbuch aus dem Jahr, in dem die KI an unseren Küchentischen angekommen ist.','Über Stolz und Angst in derselben Sekunde, über Nächte mit vier Stunden Schlaf – und über die Frage, die sich gerade alle stellen: Und ich?'],
   summary:['Die Firma, wie wir sie kennen, ist eine Ausnahme der letzten 200 Jahre. KI macht Koordination fast kostenlos – die Arbeit kehrt zum Einzelnen zurück.','Erzählt in fünf Akten: Der Bruch, die neue Firma, der Preis, die Gesellschaft, die Zukunft.','Mit Nachtnotizen, Stimmen aus dem Jahr (Übersetzerin, Sachbearbeiter, Lehrerin …) und einem Brief an den Leser von 2036.','Theorie mit Herz: Coase trifft Kahneman – warum die Ökonomie zur Ein-Mann-Firma zieht und die Psychologie dagegenhält.'],
   lese:'lp-rueckkehr',hoer:{src:'die-rueckkehr-prolog.mp3',title:'Prolog – Eine Nacht in der leeren Firma',len:'ca. 4 Min.'}},
- {id:'ganze',title:'Das Ganze',sub:'Roman',author:'Marcel Hofeditz',genre:'Roman · Hörbuch',cat:'roman',motif:'pier',whale:true,pal:P.ganze,font:'serif',pos:'top',audio:true,
+ {id:'ganze',age:16,title:'Das Ganze',sub:'Roman',author:'Marcel Hofeditz',genre:'Roman · Hörbuch',cat:'roman',motif:'pier',whale:true,pal:P.ganze,font:'serif',pos:'top',audio:true,
   blurb:['Ein Moby Dick der Gegenwart. Erzählt von einem Fremden, der gerade seinen Job verloren hat – und der einem Mann namens Marcel begegnet, der nachts am Ende eines Stegs sitzt und mit Maschinen eine ganze Welt baut.','Dieselbe Geschichte wie „Die Rückkehr“ – nur als Fiktion. Größer, dunkler, freier. Über Besessenheit, Einsamkeit und die Jagd nach dem einen großen Ganzen.'],
   summary:['Der Erzähler: ein entlassener Angestellter, Ismael unserer Zeit.','Die Hauptfigur: Marcel, ein Getriebener zwischen Genie und Rausch.','Fast jeder Mensch aus seinem Leben taucht auf – verfremdet, aber erkennbar.','Das Gegenstück zum Sachbuch „Die Rückkehr“: Was dort erzählt wird, wird hier erfunden.'],
   lese:null,hoer:null}
@@ -21,15 +21,16 @@ function openBook(b){
  document.getElementById('dKind').textContent=b.genre+(b.audio&&!b.blurb?' · mit Hörbuch':'');
  document.getElementById('dTitle').textContent=b.title;
  document.getElementById('dSub').textContent=b.sub&&b.sub!=='Roman'?b.sub:'';
- document.getElementById('dBy').textContent='von '+b.author;
+ document.getElementById('dBy').innerHTML='von '+esc(b.author)+(b.age!=null?' &nbsp;'+MG.seal(b.age):'')+' <span class="rmeta" data-stat="'+esc(b.id)+'" style="display:inline-flex;margin-left:6px"></span>';if(window.renderStats)window.renderStats();
  var bl=document.getElementById('dBlurb');
  var tabs=document.getElementById('dTabs'),pane=document.getElementById('dPane');tabs.innerHTML='';pane.innerHTML='';
  if(!b.blurb){bl.innerHTML='<p class="blurb">Ein Beispiel aus dem Regal. So wird es aussehen, wenn hier echte Bücher stehen: Leseprobe, Hörprobe und das ganze Buch – geschrieben mit KI, aus dem Leben echter Menschen.</p><a class="btn btn-primary" href="#start">Eigenes Buch schreiben</a>';tabs.style.display='none';pane.style.display='none';}
  else{tabs.style.display='';pane.style.display='';bl.innerHTML=b.blurb.map(function(p){return '<p class="blurb">'+esc(p)+'</p>';}).join('');
-  var T=[['lese','Leseprobe'],['hoer','Hörprobe'],['sum','Worum es geht']];
+  var T=[['lese','Leseprobe'],['hoer','Hörprobe'],['sum','Worum es geht'],['rate','Bewertungen']];
   T.forEach(function(t,i){var btn=document.createElement('button');btn.type='button';btn.className='tab';btn.setAttribute('role','tab');btn.textContent=t[1];btn.onclick=function(){sel(t[0]);};btn.dataset.k=t[0];tabs.appendChild(btn);});
   function lock(){return '<div class="lock"><p><b>Das ganze Buch und Hörbuch</b> erscheinen mit dem Alpha-Start des Selfpublishbot.<br>Freunde und Familie bekommen es schon vorher – auf Anfrage.</p><a class="btn btn-primary" href="mailto:marcel@offmarketpool.com?subject='+encodeURIComponent('Vollversion: '+b.title)+'&body='+encodeURIComponent('Hallo Marcel, ich würde gern „'+b.title+'“ ganz lesen bzw. hören.')+'">Vollversion anfragen</a></div>';}
   function sel(k){Array.prototype.forEach.call(tabs.children,function(x){x.setAttribute('aria-selected',String(x.dataset.k===k));});if(audio){audio.pause();}
+   if(k==='rate'){MG.ratingPane(pane,b.id,b.title,function(){window.renderStats();});return;}
    if(k==='lese'){pane.innerHTML=b.lese?document.getElementById(b.lese).innerHTML+lock():'<div class="lock"><p>Die Leseprobe zu „'+esc(b.title)+'“ kommt in den nächsten Tagen.</p></div>'+lock();}
    else if(k==='hoer'){if(!b.hoer){pane.innerHTML='<div class="lock"><p>Die Hörprobe zu „'+esc(b.title)+'“ wird gerade eingesprochen.</p></div>'+lock();return;}
     pane.innerHTML='<div class="player"><div class="row2"><button class="play" type="button" id="pBtn" aria-label="Abspielen"></button><div class="ptxt"><b>'+esc(b.hoer.title)+'</b><span>Gelesen von einer KI-Stimme · '+esc(b.hoer.len)+'</span><div class="prog" id="pProg"><i id="pBar"></i></div></div></div></div>'+lock();
@@ -44,6 +45,8 @@ function openBook(b){
  if(dlg.showModal)dlg.showModal();else dlg.setAttribute('open','');dlg.querySelector('.dlg').scrollTop=0;}
 
 window.openBook=openBook;
+function openRate(b){openBook(b);var t=document.querySelector('#dTabs [data-k="rate"]');if(t)t.click();}
+window.openRate=openRate;window.SPBBooks=mine;
 
 /* ---------- Echte Bücher (direkt hörbar) ---------- */
 var playI='<svg width="18" height="18" viewBox="0 0 24 24" fill="#15171C" aria-hidden="true"><path d="M7 4l14 8-14 8z"/></svg>',pauseI='<svg width="18" height="18" viewBox="0 0 24 24" fill="#15171C" aria-hidden="true"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>';
@@ -52,9 +55,10 @@ var rb=document.getElementById('realBooks');
 mine.forEach(function(b){var el=document.createElement('div');el.className='rcard';
  el.innerHTML='<div class="cv" role="button" tabindex="0" aria-label="'+esc(b.title)+' öffnen">'+cover(b,true)+'</div><div class="bd"><span class="tag" style="align-self:flex-start;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:#15171C;background:var(--accent);border-radius:999px;padding:3px 9px;font-weight:700">'+esc(b.genre)+'</span><h3 class="serif">'+esc(b.title)+'</h3><p class="sub">'+esc(b.sub==='Roman'?'Roman von '+b.author:b.sub+' · '+b.author)+'</p>'+
  (b.hoer?'<div class="mini-play"><button type="button" aria-label="Hörprobe abspielen">'+playI+'</button><div class="t"><b>'+esc(b.hoer.title)+'</b>Hörprobe · '+esc(b.hoer.len)+'<div class="prog"><i></i></div></div></div>':'<div class="soon">Hörbuch wird gerade eingesprochen</div>')+
- '<div class="acts"><button class="btn btn-ghost" type="button" data-o>'+(b.lese?'Leseprobe lesen':'Worum es geht')+'</button></div></div>';
+ '<div class="rmeta">'+MG.seal(b.age)+'<span data-stat="'+esc(b.id)+'"></span></div>'+
+ '<div class="acts" style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-ghost" type="button" data-o>'+(b.lese?'Leseprobe lesen':'Worum es geht')+'</button><button class="btn btn-ghost" type="button" data-r>★ Bewerten</button></div></div>';
  var open=function(){if(cardAudio)cardAudio.pause();openBook(b);};
- el.querySelector('.cv').onclick=open;el.querySelector('.cv').onkeydown=function(e){if(e.key==='Enter')open();};el.querySelector('[data-o]').onclick=open;
+ el.querySelector('.cv').onclick=open;el.querySelector('.cv').onkeydown=function(e){if(e.key==='Enter')open();};el.querySelector('[data-o]').onclick=open;el.querySelector('[data-r]').onclick=function(){if(cardAudio)cardAudio.pause();openRate(b);};
  if(b.hoer){var btn=el.querySelector('.mini-play button'),bar=el.querySelector('.mini-play .prog i'),prog=el.querySelector('.mini-play .prog');
   btn.onclick=function(){if(cardBtn!==btn){if(cardAudio)cardAudio.pause();cardAudio=new Audio(b.hoer.src);cardBtn=btn;
     cardAudio.onplay=function(){btn.innerHTML=pauseI;};cardAudio.onpause=function(){btn.innerHTML=playI;};
@@ -75,7 +79,7 @@ au.appendChild(a2);
 
 /* ---------- Steps ---------- */
 var steps=[
-['Connector verbinden','Füge den Selfpublishbot in Claude oder ChatGPT hinzu. Ein Klick, dann kennt deine KI den Weg zum Regal.','Verbinde dich mit dem Selfpublishbot.','Verbunden. Sollen wir dein Buch beginnen?'],
+['Die Tür öffnen','Füge den Selfpublishbot in Claude oder ChatGPT hinzu. Ein Klick, dann kennt deine KI den Weg in die Bibliothek.','Verbinde dich mit dem Selfpublishbot.','Verbunden. Sollen wir dein Buch beginnen?'],
 ['Deine Geschichte zusammenfassen lassen','Die KI fasst zusammen, was du bisher mit ihr erlebt und besprochen hast. Daraus entsteht der rote Faden.','Fasse zusammen, was du über mein Leben weißt.','Ich sehe drei große Linien: dein Neustart, die Gründung und die Familie. Womit fangen wir an?'],
 ['Roman oder Sachbuch wählen','Erzählt als Roman, ehrlich als Lebensgeschichte oder als Sachbuch mit deinen Lehren. Der Bot schlägt Aufbau und Kapitel vor.','Mach einen Roman daraus.','Hier ist ein Entwurf mit 12 Kapiteln. Kapitel 1 beginnt an dem Abend, an dem alles kippt.'],
 ['Überarbeiten und Cover gestalten','Kapitel für Kapitel fragt der Bot nach, kürzt und schärft. Die KI entwirft dein Cover, du wählst aus.','Kapitel 3 ist zu lang. Und zeig mir Cover-Ideen.','Gekürzt. Hier sind vier Cover-Entwürfe.'],
@@ -107,17 +111,21 @@ function typeOut(instant){var el=document.getElementById('page1');var ps=paras(c
  (function step(){if(!cur)return;i=Math.min(full.length,i+3);var shown=full.slice(0,i).split('\n\n');
   el.innerHTML=shown.map(function(p,k){return '<p>'+esc(p)+(k===shown.length-1&&i<full.length?'<span class="caret"></span>':'')+'</p>';}).join('');
   if(i<full.length)timers.push(setTimeout(step,18));})();}
-var stages=['Lese deinen Satz …','Finde den Titel …','Male das Cover …','Schreibe den Klappentext …','Schreibe die erste Seite …'];
+var stages=['Die Bibliothek lauscht deinem Satz …','Die Feder sucht den Titel …','Der Einband wird gemalt …','Der Klappentext schreibt sich von selbst …','Die erste Seite entsteht …','Die Bibliothek prüft das Siegel …'];
 function run(){var t=ask.value.trim();if(busy)return;if(t.length<8){st.textContent='Erzähl mir ein bisschen mehr – ein ganzer Satz reicht.';ask.focus();return;}
  busy=true;btn.disabled=true;clearT();A.stopSpeak();typed=false;view('front');b3d.classList.add('think');scene.style.display='';spread.classList.remove('on');
  ctrl.hidden=true;writeOn.hidden=true;if(window.innerWidth<860)document.querySelector('.stage').scrollIntoView({behavior:'smooth',block:'center'});var si=0;st.textContent=stages[0];var iv=setInterval(function(){si=Math.min(stages.length-1,si+1);st.textContent=stages[si];},1300);
  A.callBot('book',t).then(function(d){clearInterval(iv);busy=false;btn.disabled=false;
+  var sealEl=document.getElementById('botSeal');
+  if(d.freigabe==='abgelehnt'){b3d.classList.remove('think');view('front');sealEl.hidden=false;sealEl.innerHTML='<span>Diese Geschichte kann die Bibliothek nicht binden. '+esc(d.ablehnGrund||'Sie verstößt gegen die Bibliotheksordnung.')+' <a href="/bibliotheksordnung.html">Ordnung lesen</a></span>';st.textContent='Die Feder bleibt liegen.';return;}
   cur={title:d.title||'Ohne Titel',subtitle:d.subtitle||'',genre:d.genre||'Roman',author:'Dein Name',motif:SPB.M[d.motif]?d.motif:'moonsea',pal:P[d.palette]||P.night,font:/thriller|krimi|sci|sachbuch|ratgeber/i.test(d.genre||'')?'caps':'serif',pos:'top',blurb:d.blurb||'',chapters:(d.chapters||[]).slice(0,10),firstPage:d.firstPage||''};
   front.innerHTML=cover(cur,true);spine.textContent=cur.title;
   back.innerHTML='<h4>'+esc(cur.title)+'</h4>'+paras(cur.blurb).map(function(p){return '<p>'+esc(p)+'</p>';}).join('')+'<div class="bc"><span>'+esc(cur.genre)+' · Selfpublishbot</span><i></i></div>';
   document.getElementById('toc').innerHTML=cur.chapters.map(function(c){return '<li>'+esc(c)+'</li>';}).join('');
-  st.textContent='„'+cur.title+'“ – '+cur.genre+(cur.subtitle?' · '+cur.subtitle:'');
-  view('front');ctrl.hidden=false;writeOn.hidden=false;
+  st.textContent='✦ „'+cur.title+'“ – '+cur.genre+(cur.subtitle?' · '+cur.subtitle:'');
+  var age=[0,6,12,16,18].indexOf(+d.alter)>=0?+d.alter:null;sealEl.hidden=age===null;
+  if(age!==null)sealEl.innerHTML=MG.seal(age)+'<span>Siegel der Bibliothek: ab '+age+(d.alterGrund?' – '+esc(d.alterGrund):'')+'</span>';
+  view('front');ctrl.hidden=false;writeOn.hidden=false;MG.sparkle(document.getElementById('scene'),34);
   if(window.innerWidth<860)document.querySelector('.stage').scrollIntoView({behavior:'smooth',block:'center'});
   later(function(){view('back');},2600);
   later(function(){view('open');typeOut(false);},7600);});}
@@ -127,4 +135,29 @@ var reading=false,rb2=document.getElementById('readBtn');
 rb2.onclick=function(){if(!cur)return;if(reading){A.stopSpeak();reading=false;rb2.textContent='▶ Vorlesen';return;}
  if(cardAudio)cardAudio.pause();clearT();view('open');typeOut(true);reading=true;rb2.textContent='■ Stopp';
  A.speak(cur.title+'. '+(cur.subtitle?cur.subtitle+'. ':'')+'Kapitel eins. '+paras(cur.firstPage).join(' '),function(){reading=false;rb2.textContent='▶ Vorlesen';});};
+})();
+
+/* ---------- Sterne, Bestenliste, Siegel ---------- */
+(function(){
+var MG=SPBMagic,esc=SPB.esc,cover=SPB.cover;
+var mine=window.SPBBooks,openRate=window.openRate;var books={};mine.forEach(function(b){books[b.id]=b;});
+window.renderStats=function(){MG.getStats(true).then(function(rows){
+ rows.forEach(function(r){Array.prototype.forEach.call(document.querySelectorAll('[data-stat="'+r.book_id+'"]'),function(el){
+  el.innerHTML=r.votes?MG.stars(+r.avg_stars)+' <b style="color:var(--parch)">'+MG.fmt(+r.avg_stars)+'</b> <span>('+r.votes+' '+(r.votes===1?'Stimme':'Stimmen')+')</span>':'<span>Noch keine Sterne – sei die erste Stimme</span>';});});
+ renderRank(rows);});};
+var filter='alle',lastRows=[];
+var tabsEl=document.getElementById('rankTabs');
+[['alle','Alle Bücher'],['roman','Romane'],['sachbuch','Sachbücher']].forEach(function(f){var b=document.createElement('button');b.type='button';b.className='chip';b.textContent=f[1];b.setAttribute('aria-pressed',String(f[0]===filter));
+ b.onclick=function(){filter=f[0];Array.prototype.forEach.call(tabsEl.children,function(x){x.setAttribute('aria-pressed',String(x===b));});renderRank(lastRows);};tabsEl.appendChild(b);});
+function renderRank(rows){lastRows=rows;var el=document.getElementById('rank');
+ var list=rows.filter(function(r){return filter==='alle'||(r.genre||'').toLowerCase().indexOf(filter)>=0;});
+ if(!list.length){el.innerHTML='<p class="note" style="text-align:center">In dieser Abteilung steht noch kein Buch.</p>';return;}
+ el.innerHTML='';list.forEach(function(r,i){var b=books[r.book_id]||{title:r.title,author:r.author,motif:'pier',pal:SPB.P.rueckkehr,font:'serif',pos:'top'};
+  var it=document.createElement('button');it.type='button';it.className='ritem';
+  it.innerHTML='<span class="pl'+(i===0?' p1':'')+'">'+(i+1)+'</span><span class="cv">'+cover(b,true)+'</span><span class="tx"><h3>'+esc(r.title)+'</h3><p class="by">von '+esc(r.author)+' · '+esc(r.genre||'')+'</p><span class="rmeta">'+
+   (r.votes?MG.stars(+r.avg_stars)+' <b style="color:var(--parch)">'+MG.fmt(+r.avg_stars)+'</b> ('+r.votes+')':'<span>Noch ohne Sterne</span>')+'</span></span>'+MG.seal(r.age_rating);
+  it.onclick=function(){if(books[r.book_id])openRate(books[r.book_id]);};el.appendChild(it);});}
+var S=[[0,'Für alle','Märchen, Bilderbücher, Geschichten ohne Ängste.'],[6,'Ab 6','Spannung und leichte Konflikte, kindgerecht aufgelöst.'],[12,'Ab 12','Ernste Themen, Abenteuer, Streit und Verlust.'],[16,'Ab 16','Gewalt, Rausch und seelische Abgründe – nicht reißerisch.'],[18,'Ab 18','Harte Gewalt, explizite Szenen unter Erwachsenen. Nur nach Altersprüfung.']];
+var sr=document.getElementById('sealRow');if(sr)sr.innerHTML=S.map(function(s){return '<div class="it">'+MG.seal(s[0],true)+'<b>'+s[1]+'</b><span>'+s[2]+'</span></div>';}).join('');
+renderStats();
 })();
