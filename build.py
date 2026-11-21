@@ -40,6 +40,7 @@ def head(title, desc, extra="", path="/"):
 <a href="/#autoren">Chronisten</a>
 <a href="/#tools">Werkzeuge</a>
 <a href="/preise.html">Preise</a>
+<a href="/connector.html">Connector</a>
 <a href="/bibliotheksordnung.html">Ordnung</a>
 <a class="btn btn-primary" href="/#bot">Buch schreiben</a>
 </nav>
@@ -50,7 +51,7 @@ def head(title, desc, extra="", path="/"):
 FOOT = '''<footer>
 <div class="wrap">
 <span>© 2026 Selfpublishbot · Die Bibliothek der erzählten Leben · Dr. Hofeditz Real Estate GmbH, Hamburg</span>
-<span style="display:flex;gap:20px;flex-wrap:wrap"><a href="/#tools">Tools</a><a href="/preise.html">Preise</a><a href="/bibliotheksordnung.html">Bibliotheksordnung</a><a href="/impressum.html">Impressum</a><a href="/datenschutz.html">Datenschutz</a></span>
+<span style="display:flex;gap:20px;flex-wrap:wrap"><a href="/#tools">Tools</a><a href="/preise.html">Preise</a><a href="/connector.html">Connector</a><a href="/bibliotheksordnung.html">Bibliotheksordnung</a><a href="/impressum.html">Impressum</a><a href="/datenschutz.html">Datenschutz</a></span>
 </div>
 </footer>
 '''
@@ -65,6 +66,12 @@ ICON = {
 }
 def icon(k):
     return f'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#F2B544" stroke-width="1.8" aria-hidden="true">{ICON[k]}</svg>'
+
+HERKUNFT = [
+ ("selbst", "✎", "Selbst erzählt", "Mindestens 70 % des Buchs in deinen eigenen Worten – diktiert oder getippt, von der KI nur geglättet."),
+ ("mitki", "✎✦", "Mit KI geschrieben", "Deine Geschichte, deine Inhalte – die KI hat mitformuliert. Ab 30 % eigene Worte oder überwiegend eigene Inhalte."),
+ ("ki", "✦", "KI-erzählt", "Die KI hat das Buch aus deinen Stichworten, Chats oder Ideen geschrieben."),
+]
 
 TOOLS = json.loads((PARTS / "tools.json").read_text(encoding="utf-8"))
 
@@ -138,6 +145,7 @@ def build_ordnung():
         (12, "Ab 12", "Ernste Themen, Verlust, Streit – ohne drastische Details."),
         (16, "Ab 16", "Gewalt, Rausch, Horror, seelische Abgründe, Andeutungen unter Erwachsenen."),
         (18, "Ab 18", "Drastische Gewalt, explizite einvernehmliche Szenen unter Erwachsenen. Nur nach Altersprüfung.")])
+    herk = "".join(f'<div class="it"><span class="hsiegel {k}">{z}</span><b>{n}</b><span>{d}</span></div>' for k, z, n, d in HERKUNFT)
     body = f"""<main class="law">
 <p class="crumb"><a href="/">Selfpublishbot</a> › Bibliotheksordnung</p>
 <p class="eyebrow">Die Bibliothek der erzählten Leben</p>
@@ -149,7 +157,18 @@ def build_ordnung():
 <div class="seals">{seals}</div>
 <p>Zusätzlich nennt die KI Inhaltshinweise (z. B. „Gewalt“, „Verlust“, „Rausch“), damit Leserinnen und Leser vorher wissen, worauf sie sich einlassen. Ist sich die KI unsicher, liest ein Mensch gegen, bevor das Buch erscheint. Bücher mit dem Siegel „ab 18“ werden erst nach einer Altersprüfung zugänglich.</p>
 
-<h2 class="serif">2. Was nie ins Regal kommt</h2>
+<h2 class="serif">2. Das Herkunftssiegel: Wie viel Mensch steckt im Buch?</h2>
+<p>Jedes Buch ist willkommen – ob du es Wort für Wort selbst erzählt hast oder die KI es aus deinen Stichworten geschrieben hat. Das Herkunftssiegel macht nur ehrlich sichtbar, wie es entstanden ist.</p>
+<div class="seals">{herk}</div>
+<p><b>So wird es vergeben.</b> Geschrieben wird mit Claude oder ChatGPT über den Selfpublishbot-Connector. Jede Nachricht, in der du deine Geschichte erzählst oder diktierst, wird dabei unverändert als Rohtext gesichert – mit allen „Ähs“ und Umwegen. Beim Einreichen vergleicht die Bibliothek das fertige Buch Satz für Satz mit diesen Rohtexten und berechnet die <b>Diktat-Quote</b>: den Anteil der Sätze, die auf deine eigenen Worte zurückgehen.</p>
+<ul>
+<li>Zuerst gibst du selbst an, wie du gearbeitet hast. Liegt der Nachweis darunter, richtet sich das Siegel nach dem Nachweis.</li>
+<li>Bücher, die über viele Diktate und Tage entstehen, sind glaubwürdiger als ein einziger großer Upload. Eingefügte fertige Texte zählen, werden aber von einem Menschen gegengelesen.</li>
+<li>Die Diktat-Quote ist ein starkes Indiz, kein forensischer Beweis. Bei Auffälligkeiten und vor jeder Vorstellung im Scout-Programm liest ein Mensch gegen. Wer bewusst falsche Angaben macht, fliegt aus Bestenliste und Scout-Programm.</li>
+<li>Deine Rohtexte sind privat. Sie dienen nur dem Nachweis und werden nie veröffentlicht.</li>
+</ul>
+
+<h2 class="serif">3. Was nie ins Regal kommt</h2>
 <div class="box no"><h3>Absolute Grenzen</h3><ul>
 <li>Jede sexuelle oder sexualisierte Darstellung von Minderjährigen – auch fiktiv, auch angedeutet.</li>
 <li>Pornografie sowie sexuelle Inhalte über reale, erkennbare Personen.</li>
@@ -166,22 +185,23 @@ def build_ordnung():
 <li>Kritik an Personen des öffentlichen Lebens, Firmen und Institutionen, solange sie auf Tatsachen beruht.</li>
 </ul></div>
 
-<h2 class="serif">3. Echte Menschen in deinem Buch</h2>
+<h2 class="serif">4. Echte Menschen in deinem Buch</h2>
 <p>Lebensgeschichten handeln von echten Menschen. Für das öffentliche Regal macht die KI Namen von Privatpersonen vorher unkenntlich. Wer sich in einem Buch erkennt und verletzt fühlt, kann sich jederzeit an uns wenden – wir prüfen das Buch dann von Hand.</p>
 
-<h2 class="serif">4. Sterne, Rezensionen und die Bestenliste</h2>
+<h2 class="serif">5. Sterne, Rezensionen und die Bestenliste</h2>
 <ul>
 <li>Jede Leserin und jeder Leser vergibt 1 bis 5 Sterne – eine Stimme je Gerät und Buch. Wer erneut bewertet, ändert seine eigene Stimme.</li>
 <li>Rezensionen erscheinen öffentlich. Beleidigungen, Werbung, Spam und persönliche Angriffe auf Autorinnen und Autoren entfernen wir.</li>
+<li>Die Bestenliste lässt sich nach Herkunftssiegel filtern – wer nur selbst erzählte Bücher lesen will, kann das.</li>
 <li>Die Bestenliste sortiert nach einer gewichteten Sternewertung: Wenige Stimmen zählen weniger, damit ein einzelnes Lob nicht für Platz 1 reicht.</li>
 <li>Gekaufte oder selbst geschriebene Bewertungen sind verboten und führen zum Ausschluss des Buchs aus der Bestenliste.</li>
 </ul>
 
-<h2 class="serif">5. Melden</h2>
+<h2 class="serif">6. Melden</h2>
 <p>Du hast ein Buch oder eine Rezension gefunden, die gegen diese Ordnung verstößt? Schreib uns an <a href="mailto:marcel@offmarketpool.com?subject=Meldung%20Selfpublishbot">marcel@offmarketpool.com</a> mit dem Titel des Buchs. Wir prüfen jede Meldung.</p>
 </main>
 """
-    doc = head("Bibliotheksordnung – Selfpublishbot", "Wie die Bibliothek Bücher einordnet: Altersempfehlung ab 0, 6, 12, 16 und 18, Inhaltshinweise, was nie ins Regal kommt und wie Sterne und Bestenliste funktionieren.", "", "/bibliotheksordnung.html")
+    doc = head("Bibliotheksordnung – Selfpublishbot", "Wie die Bibliothek Bücher einordnet: Altersempfehlung ab 0, 6, 12, 16 und 18, Herkunftssiegel mit Diktat-Quote, Inhaltshinweise, was nie ins Regal kommt und wie Sterne und Bestenliste funktionieren.", "", "/bibliotheksordnung.html")
     doc += body + FOOT + '<script src="/assets/magic.js"></script>\n</body>\n</html>\n'
     (ROOT / "bibliotheksordnung.html").write_text(doc, encoding="utf-8")
 
@@ -210,6 +230,7 @@ PREIS_FAQ = [
  ("Wem gehören die Rechte an meinem Buch?", "Dir. Du räumst der Bibliothek nur das Recht ein, dein Buch im Regal zu zeigen und in deinem Auftrag zu vertreiben. Du kannst es jederzeit zurückziehen und auch woanders veröffentlichen – nichts ist exklusiv."),
  ("Wie werde ich bezahlt, wenn Leser mein Buch kaufen?", "Du legst den Preis fest. Von jedem Verkauf im Regal gehen 70 % an dich, 30 % behält die Bibliothek für Betrieb, Zahlungsabwicklung und Reichweite. Abgerechnet wird monatlich."),
  ("Was passiert im Scout-Programm?", "Bücher, die in der Bestenliste oben stehen, stellen wir gemeinsam mit unserer Partneragentur Verlagen sowie Hörspiel- und Filmproduktionen vor. Für dich kostet das nichts. Nur wenn ein Vertrag zustande kommt, fällt eine Provision von 15 % auf deine Honorare an – wie bei einer Literaturagentur üblich."),
+ ("Was bedeutet das Herkunftssiegel?", "Jedes Buch bekommt ein Siegel, das zeigt, wie viel Mensch drinsteckt: „Selbst erzählt“, „Mit KI geschrieben“ oder „KI-erzählt“. Berechnet wird es aus deinen gesicherten Diktaten – jede Stufe ist willkommen und kostet dasselbe."),
  ("Ab wann kann ich buchen?", "Der Selfpublishbot öffnet seine Türen mit dem Alpha-Start. Wer sich jetzt vormerkt, bekommt als Erstes eine Einladung."),
  ("Sind die Preise inklusive Mehrwertsteuer?", "Ja, alle Preise sind Endpreise inklusive 19 % MwSt. Beim Geschenkbuch ist der Versand innerhalb Deutschlands enthalten."),
 ]
@@ -268,14 +289,55 @@ def build_preise():
     doc += body + FOOT + '<script src="/assets/magic.js"></script>\n</body>\n</html>\n'
     (ROOT / "preise.html").write_text(doc, encoding="utf-8")
 
+# ---------- Connector ----------
+def build_connector():
+    body = """<main class="law">
+<p class="crumb"><a href="/">Selfpublishbot</a> › Connector</p>
+<p class="eyebrow">Schreiben, wo du sowieso mit der KI sprichst</p>
+<h1 class="serif">Der Selfpublishbot-Connector</h1>
+<p>Dein Buch entsteht nicht auf dieser Website, sondern im Gespräch mit Claude oder ChatGPT. Du erzählst oder diktierst, die KI fragt nach wie ein guter Lektor, und der Connector legt alles in deiner Bibliothek ab: deine Rohtexte, die Kapitel und am Ende das Herkunftssiegel.</p>
+<div class="box"><h3>Connector-Adresse</h3><p style="margin:0"><code style="font-size:17px;color:var(--accent);word-break:break-all">https://www.selfpublishbot.de/api/mcp</code></p></div>
+
+<h2 class="serif">In Claude verbinden</h2>
+<ol>
+<li>Öffne in Claude die Einstellungen und dort den Bereich für Connectoren.</li>
+<li>Wähle „Benutzerdefinierten Connector hinzufügen“, gib ihm den Namen „Selfpublishbot“ und trag die Adresse oben ein.</li>
+<li>Starte einen neuen Chat und sag: „Ich möchte mit dem Selfpublishbot ein Buch schreiben.“</li>
+</ol>
+<h2 class="serif">In ChatGPT verbinden</h2>
+<p>In ChatGPT lassen sich eigene Connectoren in den Einstellungen unter den Apps bzw. Connectoren hinzufügen (je nach Tarif im Entwicklermodus). Adresse wie oben eintragen.</p>
+
+<h2 class="serif">So schreibst du</h2>
+<ol>
+<li><b>Buch anlegen.</b> Du bekommst eine Buch-ID und einen geheimen Schlüssel. Heb beide gut auf – damit schreibst du in jedem neuen Chat weiter.</li>
+<li><b>Erzählen oder diktieren.</b> Nutz die Spracheingabe von Claude oder ChatGPT wie ein Diktiergerät. Jede deiner Nachrichten wird unverändert als Rohtext gesichert.</li>
+<li><b>Kapitel formen.</b> Die KI ordnet, glättet und fragt nach. Je mehr deiner eigenen Sätze stehen bleiben, desto höher deine Diktat-Quote.</li>
+<li><b>Prüfen und einreichen.</b> Jederzeit „Wie ist meine Diktat-Quote?“ fragen. Zum Schluss gibst du an, wie du gearbeitet hast, und reichst das Buch bei der Bibliothek ein.</li>
+</ol>
+
+<h2 class="serif">Das Herkunftssiegel</h2>
+<div class="seals">""" + "".join(f'<div class="it"><span class="hsiegel {k}">{z}</span><b>{n}</b><span>{d}</span></div>' for k, z, n, d in HERKUNFT) + """</div>
+<p>Wie das Siegel berechnet wird und was es nicht kann, steht in der <a href="/bibliotheksordnung.html">Bibliotheksordnung</a>.</p>
+<p style="margin-top:28px"><a class="btn btn-primary" href="/preise.html">Was es kostet</a></p>
+</main>
+"""
+    doc = head("Connector – Buch schreiben mit Claude oder ChatGPT | Selfpublishbot",
+               "Verbinde den Selfpublishbot mit Claude oder ChatGPT: Buch diktieren, Kapitel formen, Herkunftssiegel mit Diktat-Quote erhalten und bei der Bibliothek einreichen.", "", "/connector.html")
+    doc += body + FOOT + '<script src="/assets/magic.js"></script>\n</body>\n</html>\n'
+    (ROOT / "connector.html").write_text(doc, encoding="utf-8")
+
 if __name__ == "__main__":
     (ROOT / "tools").mkdir(exist_ok=True)
     build_index()
     build_ordnung()
     build_preise()
+    build_connector()
+    # Algorithmus für die Supabase-Funktion spiegeln
+    src = (ROOT / "api" / "_lib" / "herkunft.js").read_text(encoding="utf-8")
+    (ROOT / "supabase" / "functions" / "herkunft" / "herkunft.js").write_text(src.replace("module.exports = { pruefe, woerter, sprechwert, NAMEN, STUFEN };", "export { pruefe, woerter, sprechwert, NAMEN, STUFEN };"), encoding="utf-8")
     for t in TOOLS:
         build_tool(t)
-    urls = ["/", "/preise.html", "/bibliotheksordnung.html"] + [f'/tools/{t["slug"]}.html' for t in TOOLS]
+    urls = ["/", "/preise.html", "/connector.html", "/bibliotheksordnung.html"] + [f'/tools/{t["slug"]}.html' for t in TOOLS]
     (ROOT / "sitemap.xml").write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + "".join(f"<url><loc>{DOMAIN}{u}</loc></url>\n" for u in urls) + "</urlset>\n", encoding="utf-8")
     (ROOT / "robots.txt").write_text(f"User-agent: *\nAllow: /\nSitemap: {DOMAIN}/sitemap.xml\n", encoding="utf-8")
     print("ok:", 1 + len(TOOLS), "Seiten")
