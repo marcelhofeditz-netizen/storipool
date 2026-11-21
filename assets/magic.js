@@ -6,7 +6,7 @@ var reduce=w.matchMedia&&w.matchMedia('(prefers-reduced-motion: reduce)').matche
 function decor(){
  var sky=d.createElement('div');sky.className='sky';d.body.insertBefore(sky,d.body.firstChild);
  var c=d.createElement('div');c.className='candles';c.setAttribute('aria-hidden','true');
- var spots=[[3,120],[9,300],[14,70],[49,24],[58,18],[90,110],[95,280],[84,40]];
+ var spots=[[3,140],[9,320],[14,90],[47,560],[93,150],[96,330],[87,90]];
  spots.forEach(function(s,i){var e=d.createElement('div');e.className='candle';e.style.left=s[0]+'%';e.style.top=s[1]+'px';
   e.style.animationDelay=(-i*1.3)+'s';e.style.opacity=String(.55+((i*37)%40)/100);e.style.transform='scale('+(.7+((i*13)%30)/100)+')';c.appendChild(e);});
  d.body.insertBefore(c,sky.nextSibling);
