@@ -242,3 +242,9 @@ html,body{overflow-x:hidden}
  .ask{flex-direction:column;align-items:stretch}.ask .btn{width:100%}
  .stage{min-height:380px}
 }
+/* 3D-Buch-Bot */
+#book3d{display:none;width:100%;height:100%;touch-action:pan-y;cursor:grab}
+.stage.r3d .scene{width:min(460px,92vw);height:min(500px,100vw)}
+.stage.r3d #book3d{display:block}
+.stage.r3d .b3d,.stage.r3d .shadow{display:none}
+[hidden]{display:none!important}

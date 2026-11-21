@@ -41,6 +41,7 @@
 </div>
 <div class="stage">
 <div class="scene" id="scene">
+<canvas id="book3d" aria-label="3D-Buch – zum Drehen ziehen"></canvas>
 <div class="b3d idle" id="b3d">
 <div class="face f" id="bFront"></div>
 <div class="face k" id="bBack"><h4>Dein Buch</h4><p>Schreib oben einen Satz. Hier erscheint gleich dein Klappentext.</p><div class="bc"><span>Selfpublishbot</span><i></i></div></div>
@@ -167,6 +168,8 @@
 <span style="display:flex;gap:20px;flex-wrap:wrap"><a href="/#tools">Tools</a><a href="/impressum.html">Impressum</a><a href="/datenschutz.html">Datenschutz</a></span>
 </div>
 </footer>
+<script type="importmap">{"imports":{"three":"/assets/vendor/three/three.module.js","three/addons/":"/assets/vendor/three/addons/"}}</script>
+<script type="module" src="/assets/book3d.js?v=2"></script>
 <script src="/assets/covers.js"></script>
 <script src="/assets/app.js"></script>
 <script>
@@ -267,7 +270,8 @@ front.innerHTML=cover(blank,true);
 var cur=null,timers=[],busy=false;
 function clearT(){timers.forEach(clearTimeout);timers=[];}
 function later(f,ms){timers.push(setTimeout(f,ms));}
-function view(v){scene.style.display=v==='open'?'none':'';spread.classList.toggle('on',v==='open');
+function B3(x){if(window.Book3D)Book3D.state(x);}
+function view(v){B3(v==='back'?'back':v==='open'?'front':'front');scene.style.display=v==='open'?'none':'';spread.classList.toggle('on',v==='open');
  b3d.classList.remove('idle','think','back','front');if(v==='back')b3d.classList.add('back');else if(v==='front')b3d.classList.add('front');
  Array.prototype.forEach.call(ctrl.querySelectorAll('[data-v]'),function(c){c.setAttribute('aria-pressed',String(c.dataset.v===v));});}
 Array.prototype.forEach.call(ctrl.querySelectorAll('[data-v]'),function(c){c.onclick=function(){clearT();view(c.dataset.v);if(c.dataset.v==='open')typeOut(true);};});
@@ -281,11 +285,12 @@ function typeOut(instant){var el=document.getElementById('page1');var ps=paras(c
   if(i<full.length)timers.push(setTimeout(step,18));})();}
 var stages=['Lese deinen Satz …','Finde den Titel …','Male das Cover …','Schreibe den Klappentext …','Schreibe die erste Seite …'];
 function run(){var t=ask.value.trim();if(busy)return;if(t.length<8){st.textContent='Erzähl mir ein bisschen mehr – ein ganzer Satz reicht.';ask.focus();return;}
- busy=true;btn.disabled=true;clearT();A.stopSpeak();typed=false;view('front');b3d.classList.add('think');scene.style.display='';spread.classList.remove('on');
+ busy=true;btn.disabled=true;clearT();A.stopSpeak();typed=false;view('front');b3d.classList.add('think');B3('think');scene.style.display='';spread.classList.remove('on');
  ctrl.hidden=true;writeOn.hidden=true;if(window.innerWidth<860)document.querySelector('.stage').scrollIntoView({behavior:'smooth',block:'center'});var si=0;st.textContent=stages[0];var iv=setInterval(function(){si=Math.min(stages.length-1,si+1);st.textContent=stages[si];},1300);
  A.callBot('book',t).then(function(d){clearInterval(iv);busy=false;btn.disabled=false;
   cur={title:d.title||'Ohne Titel',subtitle:d.subtitle||'',genre:d.genre||'Roman',author:'Dein Name',motif:SPB.M[d.motif]?d.motif:'moonsea',pal:P[d.palette]||P.night,font:/thriller|krimi|sci|sachbuch|ratgeber/i.test(d.genre||'')?'caps':'serif',pos:'top',blurb:d.blurb||'',chapters:(d.chapters||[]).slice(0,10),firstPage:d.firstPage||''};
   front.innerHTML=cover(cur,true);spine.textContent=cur.title;
+  if(window.Book3D){SPB.coverCanvas(cur,1024,1376,function(c){Book3D.setCover(c);});Book3D.setBack(backCanvas(cur));}
   back.innerHTML='<h4>'+esc(cur.title)+'</h4>'+paras(cur.blurb).map(function(p){return '<p>'+esc(p)+'</p>';}).join('')+'<div class="bc"><span>'+esc(cur.genre)+' · Selfpublishbot</span><i></i></div>';
   document.getElementById('toc').innerHTML=cur.chapters.map(function(c){return '<li>'+esc(c)+'</li>';}).join('');
   st.textContent='„'+cur.title+'“ – '+cur.genre+(cur.subtitle?' · '+cur.subtitle:'');
@@ -295,10 +300,17 @@ function run(){var t=ask.value.trim();if(busy)return;if(t.length<8){st.textConte
   later(function(){view('open');typeOut(false);},7600);});}
 form.onsubmit=function(e){e.preventDefault();run();};
 ask.addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();run();}});
+function backCanvas(b){var W=1024,H=1376,c=document.createElement('canvas');c.width=W;c.height=H;var x=c.getContext('2d');
+ x.fillStyle='#F4EFE4';x.fillRect(0,0,W,H);x.fillStyle='#2A2622';x.textBaseline='top';
+ x.font='600 68px Georgia,serif';var y=110;wrapT(x,b.title.toUpperCase(),110,W-220).forEach(function(l){x.fillText(l,110,y);y+=80;});y+=34;
+ x.font='44px Georgia,serif';paras(b.blurb).forEach(function(p){wrapT(x,p,110,W-220).forEach(function(l){if(y<H-280)x.fillText(l,110,y);y+=62;});y+=30;});
+ x.font='32px Helvetica,Arial,sans-serif';x.fillStyle='#6B645B';x.fillText(b.genre+' · Selfpublishbot',110,H-150);
+ x.fillStyle='#2A2622';for(var i=0,bx=W-330;i<46;i++){var bw=(i*7%5===0)?6:3;x.fillRect(bx,H-200,bw,110);bx+=bw+((i*3)%4)+2;}return c;}
+function wrapT(x,t,_,max){var w=String(t).split(/\s+/),l=[],cur2='';w.forEach(function(s){var tt=cur2?cur2+' '+s:s;if(x.measureText(tt).width>max&&cur2){l.push(cur2);cur2=s;}else cur2=tt;});if(cur2)l.push(cur2);return l;}
 var reading=false,rb2=document.getElementById('readBtn');
-rb2.onclick=function(){if(!cur)return;if(reading){A.stopSpeak();reading=false;rb2.textContent='▶ Vorlesen';return;}
- if(cardAudio)cardAudio.pause();clearT();view('open');typeOut(true);reading=true;rb2.textContent='■ Stopp';
- A.speak(cur.title+'. '+(cur.subtitle?cur.subtitle+'. ':'')+'Kapitel eins. '+paras(cur.firstPage).join(' '),function(){reading=false;rb2.textContent='▶ Vorlesen';});};
+rb2.onclick=function(){if(!cur)return;if(reading){A.stopSpeak();if(window.Book3D)Book3D.talking(false);reading=false;rb2.textContent='▶ Vorlesen';return;}
+ if(cardAudio)cardAudio.pause();clearT();view('open');typeOut(true);reading=true;rb2.textContent='■ Stopp';if(window.Book3D)Book3D.talking(true);
+ A.speak(cur.title+'. '+(cur.subtitle?cur.subtitle+'. ':'')+'Kapitel eins. '+paras(cur.firstPage).join(' '),function(){reading=false;rb2.textContent='▶ Vorlesen';if(window.Book3D)Book3D.talking(false);});};
 })();
 
 </script>

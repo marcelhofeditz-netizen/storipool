@@ -7,12 +7,7 @@ function res(lbl,h,p){var d=document.createElement('div');d.className='res';d.in
 function busy(on,msg){go.disabled=on;st.textContent=msg||'';}
 
 /* ---- Cover: SVG mit Text als PNG ---- */
-function wrap(t,max){var w=t.split(/\s+/),l=[],c='';w.forEach(function(x){if((c+' '+x).trim().length>max&&c){l.push(c);c=x;}else c=(c+' '+x).trim();});if(c)l.push(c);return l;}
-function svgCover(b,id){var lines=wrap(b.title,12),fs=lines.length>2?22:26,top=b.pos!=='bottom';
- var y0=top?34:300-60-lines.length*fs*1.1;var serif=b.font==='serif';
- var txt=lines.map(function(l,i){return '<text x="18" y="'+(y0+i*fs*1.1)+'" font-size="'+fs+'" font-weight="'+(serif?600:800)+'" font-family="'+(serif?'Georgia,serif':'Helvetica,Arial,sans-serif')+'" fill="'+b.pal.ink+'"'+(serif?'':' letter-spacing="1"')+'>'+esc(serif?l:l.toUpperCase())+'</text>';}).join('');
- var ay=top?285:22;return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 300" width="1200" height="1800">'+S.M[b.motif](b.pal,id)+txt+'<text x="18" y="'+ay+'" font-size="10" letter-spacing="2" font-family="Helvetica,Arial,sans-serif" fill="'+(b.pal.ink2||b.pal.ink)+'">'+esc(b.author.toUpperCase())+'</text></svg>';}
-function download(b,i){var svg=svgCover(b,'dl'+i);var img=new Image();img.onload=function(){var c=document.createElement('canvas');c.width=1200;c.height=1800;c.getContext('2d').drawImage(img,0,0,1200,1800);
+function download(b,i){var svg=S.svgCover(b,'dl'+i);var img=new Image();img.onload=function(){var c=document.createElement('canvas');c.width=1200;c.height=1800;c.getContext('2d').drawImage(img,0,0,1200,1800);
  var a=document.createElement('a');a.download=(b.title||'cover').replace(/[^\wäöüÄÖÜß-]+/g,'-')+'.png';a.href=c.toDataURL('image/png');a.click();};
  img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);}
 
