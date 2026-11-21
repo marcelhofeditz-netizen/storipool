@@ -39,6 +39,7 @@ def head(title, desc, extra="", path="/"):
 <a href="/#bestenliste">Bestenliste</a>
 <a href="/#autoren">Chronisten</a>
 <a href="/#tools">Werkzeuge</a>
+<a href="/preise.html">Preise</a>
 <a href="/bibliotheksordnung.html">Ordnung</a>
 <a class="btn btn-primary" href="/#bot">Buch schreiben</a>
 </nav>
@@ -49,7 +50,7 @@ def head(title, desc, extra="", path="/"):
 FOOT = '''<footer>
 <div class="wrap">
 <span>© 2026 Selfpublishbot · Die Bibliothek der erzählten Leben · Dr. Hofeditz Real Estate GmbH, Hamburg</span>
-<span style="display:flex;gap:20px;flex-wrap:wrap"><a href="/#tools">Tools</a><a href="/bibliotheksordnung.html">Bibliotheksordnung</a><a href="/impressum.html">Impressum</a><a href="/datenschutz.html">Datenschutz</a></span>
+<span style="display:flex;gap:20px;flex-wrap:wrap"><a href="/#tools">Tools</a><a href="/preise.html">Preise</a><a href="/bibliotheksordnung.html">Bibliotheksordnung</a><a href="/impressum.html">Impressum</a><a href="/datenschutz.html">Datenschutz</a></span>
 </div>
 </footer>
 '''
@@ -184,13 +185,97 @@ def build_ordnung():
     doc += body + FOOT + '<script src="/assets/magic.js"></script>\n</body>\n</html>\n'
     (ROOT / "bibliotheksordnung.html").write_text(doc, encoding="utf-8")
 
+# ---------- Preise ----------
+def vormerken(paket):
+    import urllib.parse
+    q = urllib.parse.quote
+    return ("mailto:marcel@offmarketpool.com?subject=" + q("Selfpublishbot – " + paket + " vormerken")
+            + "&body=" + q("Ich möchte das Paket „" + paket + "“ zum Start vormerken.\n\nWorum geht es in meinem Buch (ein Satz):\n"))
+
+PAKETE = [
+ ("E-Book", "29 €", "einmalig", "Dein Buch als E-Book in der Welt.", [
+   "Eigene ISBN", "E-Book als EPUB und PDF", "Platz im öffentlichen Regal mit Siegel",
+   "Listung bei Amazon Kindle, Apple Books und Tolino", "Verkauf im Regal – 70 % für dich"], False),
+ ("Hörbuch", "79 €", "einmalig", "Dein Buch zum Hören – mit einer Stimme, die zu ihm passt.", [
+   "Alles aus dem E-Book-Paket", "Komplettes Hörbuch mit KI-Stimme deiner Wahl", "Kapitelmarken und Hörprobe fürs Regal",
+   "MP3-Download für dich und deine Leute", "Verteilung an Hörbuch-Plattformen, soweit sie KI-Stimmen zulassen"], True),
+ ("Komplett", "199 €", "einmalig", "E-Book, Hörbuch und gedrucktes Buch – das volle Werk.", [
+   "Alles aus dem Hörbuch-Paket", "Druckvorlage mit Buchrücken und Rückseite",
+   "Taschenbuch und Hardcover im Buchhandel bestellbar (Print on Demand)", "Ein gedrucktes Hardcover für dein eigenes Regal",
+   "Ein Mensch liest gegen, bevor es erscheint"], False),
+]
+
+PREIS_FAQ = [
+ ("Was kostet das Schreiben?", "Nichts. Du erzählst dem Zauberbuch deine Geschichte, überarbeitest sie, lässt dir Cover und Klappentext machen – alles kostenlos. Bezahlt wird erst, wenn du dein Buch veröffentlichst oder drucken lässt."),
+ ("Wem gehören die Rechte an meinem Buch?", "Dir. Du räumst der Bibliothek nur das Recht ein, dein Buch im Regal zu zeigen und in deinem Auftrag zu vertreiben. Du kannst es jederzeit zurückziehen und auch woanders veröffentlichen – nichts ist exklusiv."),
+ ("Wie werde ich bezahlt, wenn Leser mein Buch kaufen?", "Du legst den Preis fest. Von jedem Verkauf im Regal gehen 70 % an dich, 30 % behält die Bibliothek für Betrieb, Zahlungsabwicklung und Reichweite. Abgerechnet wird monatlich."),
+ ("Was passiert im Scout-Programm?", "Bücher, die in der Bestenliste oben stehen, stellen wir gemeinsam mit unserer Partneragentur Verlagen sowie Hörspiel- und Filmproduktionen vor. Für dich kostet das nichts. Nur wenn ein Vertrag zustande kommt, fällt eine Provision von 15 % auf deine Honorare an – wie bei einer Literaturagentur üblich."),
+ ("Ab wann kann ich buchen?", "Der Selfpublishbot öffnet seine Türen mit dem Alpha-Start. Wer sich jetzt vormerkt, bekommt als Erstes eine Einladung."),
+ ("Sind die Preise inklusive Mehrwertsteuer?", "Ja, alle Preise sind Endpreise inklusive 19 % MwSt. Beim Geschenkbuch ist der Versand innerhalb Deutschlands enthalten."),
+]
+
+def build_preise():
+    cards = ""
+    for name, preis, art, claim, items, top in PAKETE:
+        li = "".join("<li>" + html.escape(i) + "</li>" for i in items)
+        badge = '<span class="pbadge">Beliebt</span>' if top else ""
+        cls = "pcard top" if top else "pcard"
+        btn = "btn-primary" if top else "btn-ghost"
+        cards += (f'<div class="{cls}">{badge}<h3 class="serif">{name}</h3><p class="pp"><b>{preis}</b> <span>{art}</span></p>'
+                  f'<p class="pc">{html.escape(claim)}</p><ul>{li}</ul>'
+                  f'<a class="btn {btn}" href="{html.escape(vormerken(name))}">Zum Start vormerken</a></div>')
+    faq_html = "".join(f'<details><summary>{html.escape(q)}</summary><p>{html.escape(a)}</p></details>' for q, a in PREIS_FAQ)
+    ld = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [
+            {"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in PREIS_FAQ]}
+    gift = html.escape(vormerken("Geschenkbuch"))
+    body = f"""<main>
+<section class="wrap" style="padding-top:40px">
+<p class="crumb"><a href="/">Selfpublishbot</a> › Preise</p>
+<p class="eyebrow">Preise</p>
+<h1 class="serif" style="font-size:46px;margin:0;max-width:820px;line-height:1.1">Schreiben ist kostenlos. Du zahlst erst, wenn dein Buch in die Welt geht.</h1>
+<p class="lead">Erzähl dem Zauberbuch deine Geschichte, so oft du willst. Erst beim Veröffentlichen, Vertonen oder Drucken wählst du ein Paket – einmalig, ohne Abo.</p>
+<div class="pgrid">{cards}</div>
+</section>
+
+<section id="geschenk" class="wrap block">
+<div class="card gift">
+<p class="eyebrow">Das Geschenkbuch</p>
+<h2 class="serif">Schenk ein Jahr. Gebunden.</h2>
+<p>Mach aus deinem letzten Jahr ein Buch und leg es Freunden unter den Baum. Oder schreib mit der Oma ihr Leben auf, mit den Eltern die Geschichte eurer Familie, zur Hochzeit eure Geschichte zu zweit.</p>
+<ul class="glist"><li>Hardcover mit deinem Cover und Lesebändchen</li><li><b>49 €</b> pro Exemplar inkl. Versand in Deutschland</li><li>Ab 5 Exemplaren <b>39 €</b> pro Stück – für die ganze Familie</li><li>Auf Wunsch mit persönlicher Widmung auf der ersten Seite</li></ul>
+<div class="row" style="justify-content:flex-start"><a class="btn btn-primary" href="{gift}">Geschenkbuch vormerken</a></div>
+</div>
+</section>
+
+<section class="wrap block">
+<p class="eyebrow">Mit deinem Buch verdienen</p>
+<h2 class="h serif">Das Regal zahlt dich aus. Und manchmal öffnet es Türen.</h2>
+<div class="two" style="margin-top:28px">
+<div class="card"><h2 class="serif">70 % für dich</h2><p>Stell dein Buch ins öffentliche Regal und leg deinen Preis fest. Leseprobe und Hörprobe bleiben für alle frei – wer weiterlesen oder weiterhören will, kauft. Von jedem Verkauf gehen 70 % an dich, monatlich abgerechnet.</p></div>
+<div class="card"><h2 class="serif">Das Scout-Programm</h2><p>Die Bücher, die in der Bestenliste ganz oben stehen, stellen wir gemeinsam mit unserer Partneragentur Verlagen und Produktionen für Hörspiel, Film und Serie vor. Für dich kostenlos – nur bei Vertrag 15 % Provision, wie bei einer Literaturagentur üblich. Deine Rechte bleiben deine.</p></div>
+</div>
+</section>
+
+<section class="tp seo" style="padding-top:72px">
+<h2 class="serif">Häufige Fragen</h2>
+<div class="faq">{faq_html}</div>
+</section>
+</main>
+"""
+    doc = head("Preise – Selfpublishbot: Buch kostenlos schreiben, ab 29 € veröffentlichen",
+               "Buch mit KI kostenlos schreiben und erst beim Veröffentlichen zahlen: E-Book 29 €, Hörbuch 79 €, Komplett mit Druck 199 €, Geschenkbuch als Hardcover ab 39 €. 70 % für Autor:innen.",
+               '<script type="application/ld+json">' + json.dumps(ld, ensure_ascii=False) + '</script>\n', "/preise.html")
+    doc += body + FOOT + '<script src="/assets/magic.js"></script>\n</body>\n</html>\n'
+    (ROOT / "preise.html").write_text(doc, encoding="utf-8")
+
 if __name__ == "__main__":
     (ROOT / "tools").mkdir(exist_ok=True)
     build_index()
     build_ordnung()
+    build_preise()
     for t in TOOLS:
         build_tool(t)
-    urls = ["/", "/bibliotheksordnung.html"] + [f'/tools/{t["slug"]}.html' for t in TOOLS]
+    urls = ["/", "/preise.html", "/bibliotheksordnung.html"] + [f'/tools/{t["slug"]}.html' for t in TOOLS]
     (ROOT / "sitemap.xml").write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + "".join(f"<url><loc>{DOMAIN}{u}</loc></url>\n" for u in urls) + "</urlset>\n", encoding="utf-8")
     (ROOT / "robots.txt").write_text(f"User-agent: *\nAllow: /\nSitemap: {DOMAIN}/sitemap.xml\n", encoding="utf-8")
     print("ok:", 1 + len(TOOLS), "Seiten")
