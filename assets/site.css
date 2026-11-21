@@ -248,3 +248,6 @@ html,body{overflow-x:hidden}
 .stage.r3d #book3d{display:block}
 .stage.r3d .b3d,.stage.r3d .shadow{display:none}
 [hidden]{display:none!important}
+.voicebar{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;margin-top:12px}
+.voicebar .btn{min-height:42px;padding:9px 18px}
+.voicebar .note{font-size:14px}

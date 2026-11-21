@@ -42,6 +42,7 @@
 <textarea id="ask" rows="2" maxlength="400" placeholder="Es war einmal …"></textarea>
 <button class="btn btn-primary" type="submit" id="askBtn">Feder ansetzen ✒</button>
 </form>
+<div class="voicebar"><button class="btn btn-ghost" type="button" id="micBtn" aria-pressed="false">🎙 Sprich mit dem Buch</button><span class="note" id="voiceHint">Erzähl ihm deine Geschichte – es fragt nach und schreibt mit.</span></div>
 <div class="ideas" id="ideas"></div>
 <p class="status" id="botStatus" role="status" aria-live="polite"></p>
 </div>
@@ -195,7 +196,7 @@
 </div>
 </footer>
 <script type="importmap">{"imports":{"three":"/assets/vendor/three/three.module.js","three/addons/":"/assets/vendor/three/addons/"}}</script>
-<script type="module" src="/assets/book3d.js?v=3"></script>
+<script type="module" src="/assets/book3d.js?v=4"></script>
 <script src="/assets/covers.js"></script>
 <script src="/assets/magic.js"></script>
 <script src="/assets/app.js"></script>
@@ -315,16 +316,16 @@ function typeOut(instant){var el=document.getElementById('page1');var ps=paras(c
   el.innerHTML=shown.map(function(p,k){return '<p>'+esc(p)+(k===shown.length-1&&i<full.length?'<span class="caret"></span>':'')+'</p>';}).join('');
   if(i<full.length)timers.push(setTimeout(step,18));})();}
 var stages=['Die Bibliothek lauscht deinem Satz …','Die Feder sucht den Titel …','Der Einband wird gemalt …','Der Klappentext schreibt sich von selbst …','Die erste Seite entsteht …','Die Bibliothek prüft das Siegel …'];
-function run(){var t=ask.value.trim();if(busy)return;if(t.length<8){st.textContent='Erzähl mir ein bisschen mehr – ein ganzer Satz reicht.';ask.focus();return;}
+function run(cb){var t=ask.value.trim();if(busy)return;if(t.length<8){st.textContent='Erzähl mir ein bisschen mehr – ein ganzer Satz reicht.';ask.focus();return;}
  busy=true;btn.disabled=true;clearT();A.stopSpeak();typed=false;view('front');b3d.classList.add('think');B3('think');scene.style.display='';spread.classList.remove('on');
  ctrl.hidden=true;writeOn.hidden=true;if(window.innerWidth<860)document.querySelector('.stage').scrollIntoView({behavior:'smooth',block:'center'});var si=0;st.textContent=stages[0];var iv=setInterval(function(){si=Math.min(stages.length-1,si+1);st.textContent=stages[si];},1300);
  A.callBot('book',t).then(function(d){clearInterval(iv);busy=false;btn.disabled=false;
   var sealEl=document.getElementById('botSeal');
   if(d.freigabe==='abgelehnt'){b3d.classList.remove('think');view('front');sealEl.hidden=false;sealEl.innerHTML='<span>Diese Geschichte kann die Bibliothek nicht binden. '+esc(d.ablehnGrund||'Sie verstößt gegen die Bibliotheksordnung.')+' <a href="/bibliotheksordnung.html">Ordnung lesen</a></span>';st.textContent='Die Feder bleibt liegen.';return;}
   cur={title:d.title||'Ohne Titel',subtitle:d.subtitle||'',genre:d.genre||'Roman',author:'Dein Name',motif:SPB.M[d.motif]?d.motif:'moonsea',pal:P[d.palette]||P.night,font:/thriller|krimi|sci|sachbuch|ratgeber/i.test(d.genre||'')?'caps':'serif',pos:'top',blurb:d.blurb||'',chapters:(d.chapters||[]).slice(0,10),firstPage:d.firstPage||''};
-  front.innerHTML=cover(cur,true);spine.textContent=cur.title;
+  front.innerHTML=cover(cur,true);spine.textContent=cur.title;if(cb)setTimeout(function(){cb(cur);},0);
   if(window.Book3D){SPB.coverCanvas(cur,600,900,function(c){Book3D.setCover(c,cur.title,cur.genre);});Book3D.setBack(backCanvas(cur));
-   setTimeout(function(){if(reading||!cur)return;Book3D.talking(true);A.speak('Fertig! Dein Buch heißt: '+cur.title+'.',function(){Book3D.talking(false);});},600);}
+   setTimeout(function(){if(reading||!cur||conv)return;Book3D.talking(true);A.speak('Fertig! Dein Buch heißt: '+cur.title+'.',function(){Book3D.talking(false);});},600);}
   back.innerHTML='<h4>'+esc(cur.title)+'</h4>'+paras(cur.blurb).map(function(p){return '<p>'+esc(p)+'</p>';}).join('')+'<div class="bc"><span>'+esc(cur.genre)+' · Selfpublishbot</span><i></i></div>';
   document.getElementById('toc').innerHTML=cur.chapters.map(function(c){return '<li>'+esc(c)+'</li>';}).join('');
   st.textContent='✦ „'+cur.title+'“ – '+cur.genre+(cur.subtitle?' · '+cur.subtitle:'');
@@ -372,8 +373,36 @@ function renderRank(rows){lastRows=rows;var el=document.getElementById('rank');
 var S=[[0,'Für alle','Märchen, Bilderbücher, Geschichten ohne Ängste.'],[6,'Ab 6','Spannung und leichte Konflikte, kindgerecht aufgelöst.'],[12,'Ab 12','Ernste Themen, Abenteuer, Streit und Verlust.'],[16,'Ab 16','Gewalt, Rausch und seelische Abgründe – nicht reißerisch.'],[18,'Ab 18','Harte Gewalt, explizite Szenen unter Erwachsenen. Nur nach Altersprüfung.']];
 var sr=document.getElementById('sealRow');if(sr)sr.innerHTML=S.map(function(s){return '<div class="it">'+MG.seal(s[0],true)+'<b>'+s[1]+'</b><span>'+s[2]+'</span></div>';}).join('');
 renderStats();
-})();
 
+/* ---------- Mit dem Buch sprechen (ElevenLabs-Agent über /api/voice; Rückfall: Spracherkennung + Satz) ---------- */
+window.conv=null;var connecting=false,voiceOff=false,ELmod=null,saidByUser=[],built=false;
+var micBtn=document.getElementById('micBtn'),vHint=document.getElementById('voiceHint');
+window.Book3D=window.Book3D||{};Book3D.level=function(){if(conv){try{return Math.min(1,conv.getOutputVolume()*2.2);}catch(e){return 0;}}return A.level?A.level():0;};
+function micUi(){micBtn.setAttribute('aria-pressed',String(!!conv));micBtn.textContent=connecting?'… verbinde':conv?'■ Gespräch beenden':'🎙 Sprich mit dem Buch';}
+function loadEL(){return ELmod||(ELmod=import('https://esm.sh/@elevenlabs/client@1.36.1'));}
+function bauen(satz){return new Promise(function(res){ask.value=satz;built=true;run(function(c){res('Das Buch steht auf dem Pergament. Titel: '+c.title+'. Genre: '+c.genre+'. Klappentext: '+String(c.blurb).slice(0,280));});if(!busy)res('Das hat nicht geklappt.');setTimeout(function(){res('Die Bibliothek konnte dieses Buch nicht binden – frag nach einer anderen Geschichte.');},25000);});}
+async function startVoice(){
+ if(conv||connecting)return true;if(voiceOff)return false;connecting=true;micUi();A.stopSpeak();saidByUser=[];built=false;
+ try{var mod=loadEL();var r=await fetch('/api/voice');if(!r.ok)throw new Error('voice '+r.status);var d=await r.json();var m=await mod;
+  var how=d.token?{conversationToken:d.token,connectionType:'webrtc'}:{signedUrl:d.signedUrl,connectionType:'websocket'};
+  conv=await m.Conversation.startSession(Object.assign(how,{
+   clientTools:{buch_erstellen:function(p){return bauen(String((p&&p.satz)||saidByUser.join(' ')).slice(0,400));}},
+   onDisconnect:function(){conv=null;connecting=false;Book3D.talking&&Book3D.talking(false);micUi();if(!built&&saidByUser.join(' ').length>20){ask.value=saidByUser.join(' ').slice(0,400);run();}},
+   onModeChange:function(x){var sp=!!(x&&x.mode==='speaking');Book3D.talking&&Book3D.talking(sp);},
+   onMessage:function(x){if(!x||!x.message)return;var msg=x.message.replace(/\[[^\]]{1,30}\]\s*/g,'');if(x.source==='user'){saidByUser.push(msg);vHint.textContent='Du: '+msg;}else{st.textContent=msg;}},
+   onError:function(e){console.error('voice',e);}}));
+  connecting=false;micUi();vHint.textContent='Ich höre zu …';return true;
+ }catch(e){console.error(e);voiceOff=true;conv=null;connecting=false;micUi();return false;}}
+function stopVoice(){if(!conv)return;var c=conv;conv=null;micUi();c.endSession().catch(function(){});}
+var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+function listenOnce(){if(!SR){vHint.textContent='Dein Browser kann leider nicht zuhören – schreib deinen Satz einfach ins Feld.';ask.focus();return;}
+ var rec=new SR();rec.lang='de-DE';rec.interimResults=true;var txt='';vHint.textContent='Ich höre zu … erzähl mir deine Geschichte in einem Satz.';micBtn.textContent='… ich höre';Book3D.state&&Book3D.state('front');
+ rec.onresult=function(e){txt='';for(var i=0;i<e.results.length;i++)txt+=e.results[i][0].transcript;ask.value=txt;};
+ rec.onend=function(){micUi();if(txt.trim().length>8){vHint.textContent='Verstanden.';run();}else vHint.textContent='Ich habe nichts gehört – versuch es nochmal.';};
+ rec.onerror=function(ev){micUi();if(ev.error==='not-allowed')vHint.textContent='Bitte erlaube das Mikrofon – oder schreib einfach ins Feld.';};
+ try{rec.start();}catch(e){micUi();}}
+micBtn.onclick=function(){if(conv){stopVoice();return;}if(connecting)return;startVoice().then(function(ok){if(!ok)listenOnce();});};
+})();
 </script>
 </body>
 </html>

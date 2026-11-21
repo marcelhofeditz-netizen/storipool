@@ -38,12 +38,23 @@ var voice=null;
 function pickVoice(){if(!w.speechSynthesis)return null;var v=speechSynthesis.getVoices().filter(function(x){return /^de/i.test(x.lang);});
  var best=v.filter(function(x){return /natural|neural|premium|enhanced|google/i.test(x.name);})[0];return best||v[0]||null;}
 if(w.speechSynthesis){speechSynthesis.onvoiceschanged=function(){voice=pickVoice();};voice=pickVoice();}
-function speak(text,onend,rate){if(!w.speechSynthesis){alert('Dein Browser kann leider nicht vorlesen.');return;}speechSynthesis.cancel();
- if(!voice)voice=pickVoice();var u=new SpeechSynthesisUtterance(text);u.lang='de-DE';if(voice)u.voice=voice;u.rate=rate||.96;u.onend=onend||null;speechSynthesis.speak(u);}
-function stopSpeak(){if(w.speechSynthesis)speechSynthesis.cancel();}
+function browserSpeak(text,onend,rate){if(!w.speechSynthesis){if(onend)setTimeout(onend,Math.min(9000,1500+text.length*45));return;}speechSynthesis.cancel();
+ if(!voice)voice=pickVoice();var u=new SpeechSynthesisUtterance(text);u.lang='de-DE';if(voice)u.voice=voice;u.rate=rate||.96;u.onend=u.onerror=onend||null;speechSynthesis.speak(u);}
+/* Stimme des Zauberbuchs: ElevenLabs über /api/speak, sonst Browser-Stimme. level() liefert die Lautstärke für den Mund. */
+var player=null,actx=null,anl=null,abuf=null,elOff=false,speakId=0;
+function tap(){if(anl||!(w.AudioContext||w.webkitAudioContext))return;try{actx=new(w.AudioContext||w.webkitAudioContext)();var src=actx.createMediaElementSource(player);anl=actx.createAnalyser();anl.fftSize=256;src.connect(anl);anl.connect(actx.destination);abuf=new Uint8Array(anl.fftSize);}catch(e){anl=null;}}
+function level(){if(!anl||!player||player.paused)return 0;if(actx.state==='suspended')actx.resume();anl.getByteTimeDomainData(abuf);var q=0;for(var i=0;i<abuf.length;i++){var v=(abuf[i]-128)/128;q+=v*v;}return Math.min(1,Math.sqrt(q/abuf.length)*4);}
+function speak(text,onend,rate){stopSpeak();var id=++speakId;
+ if(rate||elOff){browserSpeak(text,onend,rate);return;}
+ if(!player){player=new Audio();player.playsInline=true;}
+ fetch('/api/speak',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:text})})
+  .then(function(r){if(r.status===503)elOff=true;if(!r.ok)throw 0;return r.json();})
+  .then(function(d){if(id!==speakId)return;if(!d.audio)throw 0;tap();player.onended=function(){if(onend)onend();};player.src='data:audio/mpeg;base64,'+d.audio;return player.play();})
+  .catch(function(){if(id===speakId)browserSpeak(text,onend,rate);});}
+function stopSpeak(){speakId++;if(player)try{player.pause();}catch(e){}if(w.speechSynthesis)speechSynthesis.cancel();}
 
 function copyBtn(el,text){var b=document.createElement('button');b.type='button';b.className='copy';b.textContent='Kopieren';
  b.onclick=function(){(navigator.clipboard?navigator.clipboard.writeText(text):Promise.reject()).then(function(){b.textContent='Kopiert';setTimeout(function(){b.textContent='Kopieren';},1500);}).catch(function(){});};el.appendChild(b);}
 
-w.SPBApp={callBot:callBot,speak:speak,stopSpeak:stopSpeak,copyBtn:copyBtn,fallback:fallback};
+w.SPBApp={callBot:callBot,speak:speak,stopSpeak:stopSpeak,level:level,copyBtn:copyBtn,fallback:fallback};
 })(window);
