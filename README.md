@@ -1,4 +1,4 @@
-# Selfpublishbot
+# selfpublishbot
 Website des Selfpublishbot (vormals Storipool).
 
 - Quellen: `src/` (Startseite, Tool-Texte in `src/tools.json`), gemeinsame Assets in `assets/`

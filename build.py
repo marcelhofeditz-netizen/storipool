@@ -9,7 +9,9 @@ PARTS = ROOT / "src"
 LOGO = '''<svg width="30" height="30" viewBox="0 0 32 32" aria-hidden="true" fill="none" stroke="#F2B544" stroke-width="2"><rect x="7" y="5" width="18" height="23" rx="2"/><path d="M11 5v23"/><circle cx="18" cy="14" r="1.6" fill="#F2B544"/><circle cx="22" cy="14" r="1.6" fill="#F2B544"/><path d="M17 19q2.5 2 5 0"/><path d="M20 5V2"/><circle cx="20" cy="1.6" r="1.2" fill="#F2B544"/></svg>'''
 FAVICON = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%2315171C'/%3E%3Cg fill='none' stroke='%23F2B544' stroke-width='2'%3E%3Crect x='8' y='6' width='16' height='21' rx='2'/%3E%3Cpath d='M12 6v21'/%3E%3C/g%3E%3Ccircle cx='17' cy='14' r='1.5' fill='%23F2B544'/%3E%3Ccircle cx='21' cy='14' r='1.5' fill='%23F2B544'/%3E%3C/svg%3E"
 
-def head(title, desc, extra=""):
+DOMAIN = "https://www.selfpublishbot.de"
+
+def head(title, desc, extra="", path="/"):
     return f'''<!doctype html>
 <html lang="de">
 <head>
@@ -20,6 +22,8 @@ def head(title, desc, extra=""):
 <meta property="og:title" content="{html.escape(title)}">
 <meta property="og:description" content="{html.escape(desc)}">
 <meta property="og:type" content="website">
+<link rel="canonical" href="{DOMAIN}{path}">
+<meta property="og:url" content="{DOMAIN}{path}">
 <link rel="icon" href="{FAVICON}">
 <link rel="stylesheet" href="/assets/site.css">
 {extra}</head>
@@ -93,7 +97,7 @@ def build_tool(t):
            "applicationCategory": "WritingApplication", "inLanguage": "de",
            "offers": {"@type": "Offer", "price": "0", "priceCurrency": "EUR"}}]
     extra = "".join(f'<script type="application/ld+json">{json.dumps(x, ensure_ascii=False)}</script>\n' for x in ld)
-    doc = head(t["title"], t["desc"], extra)
+    doc = head(t["title"], t["desc"], extra, f'/tools/{t["slug"]}.html')
     doc += f'''<main>
 <section class="tp">
 <p class="crumb"><a href="/">Selfpublishbot</a> › <a href="/#tools">Tools</a> › {html.escape(t["name"])}</p>
@@ -126,4 +130,7 @@ if __name__ == "__main__":
     build_index()
     for t in TOOLS:
         build_tool(t)
+    urls = ["/"] + [f'/tools/{t["slug"]}.html' for t in TOOLS]
+    (ROOT / "sitemap.xml").write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + "".join(f"<url><loc>{DOMAIN}{u}</loc></url>\n" for u in urls) + "</urlset>\n", encoding="utf-8")
+    (ROOT / "robots.txt").write_text(f"User-agent: *\nAllow: /\nSitemap: {DOMAIN}/sitemap.xml\n", encoding="utf-8")
     print("ok:", 1 + len(TOOLS), "Seiten")
