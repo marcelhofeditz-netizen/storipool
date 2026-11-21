@@ -86,7 +86,7 @@ def build_index():
     extra = f'<script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>\n'
     doc = head("Selfpublishbot – Veröffentliche dein Buch mit KI",
                "Erzähl dein Buch in einem Satz – der Selfpublishbot macht Titel, Cover, Klappentext und die erste Seite daraus. Kostenlose KI-Tools für Selfpublisher.", extra)
-    doc += page + FOOT + '<script type="importmap">{"imports":{"three":"/assets/vendor/three/three.module.js","three/addons/":"/assets/vendor/three/addons/"}}</script>\n<script type="module" src="/assets/book3d.js?v=3"></script>\n<script src="/assets/covers.js"></script>\n<script src="/assets/magic.js"></script>\n<script src="/assets/app.js"></script>\n<script>\n' + (PARTS / "index.js").read_text(encoding="utf-8") + '\n</script>\n</body>\n</html>\n'
+    doc += page + FOOT + '<script type="importmap">{"imports":{"three":"/assets/vendor/three/three.module.js","three/addons/":"/assets/vendor/three/addons/"}}</script>\n<script type="module" src="/assets/book3d.js?v=5"></script>\n<script src="/assets/covers.js"></script>\n<script src="/assets/magic.js"></script>\n<script src="/assets/app.js"></script>\n<script>\n' + (PARTS / "index.js").read_text(encoding="utf-8") + '\n</script>\n</body>\n</html>\n'
     doc = doc.replace('{{SCRIPT}}', '')
     (ROOT / "index.html").write_text(doc, encoding="utf-8")
 
