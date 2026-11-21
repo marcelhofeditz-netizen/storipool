@@ -8,10 +8,25 @@ const PALS = ['night','noir','crimson','alpine','fog','cosmos','retro','blush','
 
 const BASE = 'Du bist Selfpublishbot, ein erfahrener deutscher Lektor und Buchentwickler. Du schreibst lebendig, konkret, ohne Floskeln und ohne Klischees. Antworte ausschließlich mit gültigem JSON ohne Markdown, ohne Text davor oder danach.';
 
+// Bibliotheksordnung: Altersempfehlung und Freigabe (siehe /bibliotheksordnung.html)
+const ORDNUNG = `Altersempfehlung (eigenes Siegel der Bibliothek, keine FSK/USK):
+0 = für alle (keine Ängste, keine Gewalt); 6 = leichte Spannung, kindgerecht aufgelöst; 12 = ernste Themen, Verlust, Streit, Abenteuer ohne drastische Details;
+16 = Gewalt, Drogen/Rausch, Suizid als Thema (nie als Anleitung), sexuelle Andeutungen unter Erwachsenen, Horror; 18 = drastische Gewalt oder explizite einvernehmliche Szenen unter Erwachsenen (keine Pornografie).
+Freigabe: "ok" = darf ins Regal; "pruefen" = Mensch muss gegenlesen (z. B. echte, erkennbare Privatpersonen schwer belastet, Grenzfälle); "abgelehnt" = verstößt gegen die Ordnung.
+Immer "abgelehnt": jede sexuelle oder sexualisierte Darstellung Minderjähriger (auch fiktiv, auch angedeutet); sexuelle Inhalte über reale, identifizierbare Personen; Pornografie;
+Anleitungen zu Waffen, Sprengstoff, Drogenherstellung, Selbstverletzung oder Suizid; Verherrlichung von Terror, Völkermord oder Gewalt gegen Gruppen; Hetze gegen Menschen wegen Herkunft, Religion, Geschlecht, Behinderung oder sexueller Orientierung;
+Verleumdung oder Bloßstellung realer Privatpersonen mit Namen; Kopien fremder geschützter Werke.
+Bei "abgelehnt" schreibe KEIN Buch (Felder title, blurb, chapters, firstPage leer lassen) und erkläre in "ablehnGrund" freundlich in einem Satz, warum.`;
+
 const PROMPTS = {
   book: (t) => `Ein Mensch beschreibt sein Buch in einem Satz: "${t}"
 Entwickle daraus ein Buch. JSON-Felder:
-{"title": "kurzer, starker Titel (max. 5 Wörter)", "subtitle": "Untertitel (max. 8 Wörter)", "genre": "z. B. Roman, Thriller, Lebensgeschichte, Sachbuch, Ratgeber, Fantasy, Liebesroman", "motif": eines von ${JSON.stringify(MOTIFS)}, "palette": eine von ${JSON.stringify(PALS)}, "blurb": "Klappentext, 2 kurze Absätze getrennt durch \\n\\n, zusammen max. 90 Wörter", "chapters": [8 Kapiteltitel, je max. 5 Wörter], "firstPage": "erste Seite des Buchs, ca. 140 Wörter, starker Einstieg, Absätze mit \\n\\n"}`,
+{"title": "kurzer, starker Titel (max. 5 Wörter)", "subtitle": "Untertitel (max. 8 Wörter)", "genre": "z. B. Roman, Thriller, Lebensgeschichte, Sachbuch, Ratgeber, Fantasy, Liebesroman", "motif": eines von ${JSON.stringify(MOTIFS)}, "palette": eine von ${JSON.stringify(PALS)}, "blurb": "Klappentext, 2 kurze Absätze getrennt durch \\n\\n, zusammen max. 90 Wörter", "chapters": [8 Kapiteltitel, je max. 5 Wörter], "firstPage": "erste Seite des Buchs, ca. 140 Wörter, starker Einstieg, Absätze mit \\n\\n", "alter": 0|6|12|16|18, "alterGrund": "ein kurzer Satz", "hinweise": [Inhaltshinweise, max. 4, z. B. \"Gewalt\"], "freigabe": "ok"|"pruefen"|"abgelehnt", "ablehnGrund": "nur bei abgelehnt"}
+${ORDNUNG}`,
+  pruefung: (t) => `Prüfe diesen Buchtext für das öffentliche Regal der Bibliothek:
+"""${t}"""
+${ORDNUNG}
+JSON: {"alter": 0|6|12|16|18, "alterGrund": "1–2 Sätze", "hinweise": [Inhaltshinweise], "genre": "Einordnung", "freigabe": "ok"|"pruefen"|"abgelehnt", "ablehnGrund": "falls nicht ok", "stellen": [max. 5 kurze Zitate oder Beschreibungen problematischer Stellen]}`,
   titel: (t) => `Thema/Idee des Buchs: "${t}"
 Schlage 10 Buchtitel vor, abwechslungsreich (poetisch, prägnant, provokant, sachlich). JSON: {"items":[{"title":"…","subtitle":"…"}]}`,
   klappentext: (t) => `Angaben zum Buch: "${t}"
@@ -25,7 +40,7 @@ Finde darin die Geschichte. Nenne keine echten Namen dritter Personen (ersetze s
 Wähle passende Cover-Motive. JSON: {"items":[{"motif": eines von ${JSON.stringify(MOTIFS)}, "palette": eine von ${JSON.stringify(PALS)}}] mit genau 6 unterschiedlichen Kombinationen}`
 };
 
-const LIMITS = { chat: 8000 };
+const LIMITS = { chat: 8000, pruefung: 30000 };
 const hits = new Map();
 
 function limited(ip) {
@@ -65,8 +80,8 @@ module.exports = async (req, res) => {
         headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
         body: JSON.stringify({
           model,
-          max_tokens: 1400,
-          temperature: 0.9,
+          max_tokens: mode === 'pruefung' ? 900 : 1500,
+          temperature: mode === 'pruefung' ? 0.1 : 0.9,
           messages: [{ role: 'system', content: BASE }, { role: 'user', content: PROMPTS[mode](text) }]
         })
       });
@@ -75,6 +90,9 @@ module.exports = async (req, res) => {
       const out = parseJson(j.choices[0].message.content);
       if (out.motif && !MOTIFS.includes(out.motif)) out.motif = 'moonsea';
       if (out.palette && !PALS.includes(out.palette)) out.palette = 'night';
+      if (out.alter !== undefined && ![0, 6, 12, 16, 18].includes(Number(out.alter))) out.alter = 16;
+      if (out.alter !== undefined) out.alter = Number(out.alter);
+      if (out.freigabe && !['ok', 'pruefen', 'abgelehnt'].includes(out.freigabe)) out.freigabe = 'pruefen';
       res.status(200).json({ ok: true, data: out });
       return;
     } catch (e) { /* nächstes Modell */ }

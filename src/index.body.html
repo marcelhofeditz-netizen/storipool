@@ -1,12 +1,13 @@
 <main>
 <section class="bot" id="bot">
 <div>
-<h1 class="serif">Erzähl mir dein Buch <em>in einem Satz.</em></h1>
-<p class="lede">Der Selfpublishbot macht daraus in Sekunden Titel, Cover, Klappentext, Inhaltsverzeichnis und die erste Seite – und liest sie dir vor.</p>
+<p class="eyebrow" style="margin-bottom:14px">Die Bibliothek der erzählten Leben</p>
+<h1 class="serif">Flüstere der Bibliothek <em>deine Geschichte.</em></h1>
+<p class="lede">Ein Satz genügt. Dann schreibt die Feder von selbst: Titel, Einband, Klappentext, Inhaltsverzeichnis und die erste Seite – und eine Stimme liest sie dir vor.</p>
 <form class="ask" id="askForm" autocomplete="off">
 <label for="ask" class="sr" style="position:absolute;left:-9999px">Dein Buch in einem Satz</label>
-<textarea id="ask" rows="2" maxlength="400" placeholder="z. B. Ein Mann verliert mit 50 seinen Job und segelt allein nach Portugal."></textarea>
-<button class="btn btn-primary" type="submit" id="askBtn">Buch machen</button>
+<textarea id="ask" rows="2" maxlength="400" placeholder="Es war einmal …"></textarea>
+<button class="btn btn-primary" type="submit" id="askBtn">Feder ansetzen ✒</button>
 </form>
 <div class="ideas" id="ideas"></div>
 <p class="status" id="botStatus" role="status" aria-live="polite"></p>
@@ -16,7 +17,7 @@
 <canvas id="book3d" aria-label="3D-Buch – zum Drehen ziehen"></canvas>
 <div class="b3d idle" id="b3d">
 <div class="face f" id="bFront"></div>
-<div class="face k" id="bBack"><h4>Dein Buch</h4><p>Schreib oben einen Satz. Hier erscheint gleich dein Klappentext.</p><div class="bc"><span>Selfpublishbot</span><i></i></div></div>
+<div class="face k" id="bBack"><h4>Dein Buch</h4><p>Flüstere oben einen Satz. Hier erscheint gleich dein Klappentext.</p><div class="bc"><span>Selfpublishbot</span><i></i></div></div>
 <div class="spine"><span id="bSpine">Selfpublishbot</span></div>
 <div class="pages"></div>
 </div>
@@ -27,55 +28,75 @@
 <div class="pg"><h4>Kapitel 1</h4><div id="page1"></div></div>
 </div>
 <div class="ctrl" id="ctrl" hidden>
-<button class="chip" type="button" data-v="front">Cover</button>
+<button class="chip" type="button" data-v="front">Einband</button>
 <button class="chip" type="button" data-v="back">Klappentext</button>
 <button class="chip" type="button" data-v="open">Aufschlagen</button>
 <button class="chip" type="button" id="readBtn">▶ Vorlesen</button>
 </div>
-<a class="btn btn-primary" href="#start" id="writeOn" hidden>Dieses Buch fertig schreiben</a>
+<div id="botSeal" class="rmeta" hidden></div>
+<a class="btn btn-primary" href="#start" id="writeOn" hidden>Dieses Buch zu Ende schreiben</a>
 </div>
 </section>
 
-<section id="buecher" class="wrap block" style="padding-top:56px">
-<div class="sectitle"><h2 class="serif">Echte Bücher – lesen und hören</h2><p class="note">Mit KI geschrieben, von Menschen erzählt</p></div>
+<section id="buecher" class="wrap block" style="padding-top:64px">
+<div class="orn" aria-hidden="true"><span>✦</span></div>
+<div class="sectitle"><h2 class="serif">Das Regal der erzählten Leben</h2><p class="note">Echte Bücher – mit KI geschrieben, von Menschen gelebt. Lesen, hören, bewerten.</p></div>
 <div class="rb" id="realBooks"></div>
+<div class="shelfline" aria-hidden="true"></div>
+</section>
+
+<section id="bestenliste" class="wrap block" style="padding-top:80px">
+<div class="orn" aria-hidden="true"><span>✦</span></div>
+<div class="sectitle"><h2 class="serif">Die Bestenliste</h2><p class="note">Gewählt von den Leserinnen und Lesern – mit Sternen, öffentlich und ehrlich.</p></div>
+<div class="rtabs" id="rankTabs"></div>
+<div class="rank" id="rank"><p class="note" style="text-align:center">Die Bibliothek zählt die Sterne …</p></div>
+<p class="note" style="text-align:center;margin-top:14px">Sortiert nach gewichteter Sternewertung – ein einzelnes Lob reicht nicht für Platz 1.</p>
 </section>
 
 <section id="autoren" class="wrap block" style="padding-top:72px">
-<div class="sectitle"><h2 class="serif">Die Autoren</h2></div>
+<div class="orn" aria-hidden="true"><span>✦</span></div>
+<div class="sectitle"><h2 class="serif">Die Chronisten</h2><p class="note">Menschen, die ihr Leben aufgeschrieben haben.</p></div>
 <div class="authors" id="authors"></div>
 </section>
 
 <section id="tools" class="wrap block" style="padding-top:72px">
-<p class="eyebrow">Kostenlose Tools</p>
-<h2 class="h serif">Alles, was du fürs Selfpublishing brauchst.</h2>
-<p class="lead">Jedes Werkzeug funktioniert sofort und ohne Anmeldung – und alles, was du damit machst, fließt später in dein Buch.</p>
+<p class="eyebrow">Die Werkzeuge der Schreibstube</p>
+<h2 class="h serif">Alles, was ein Buch zum Leben braucht.</h2>
+<p class="lead">Titel, Klappentext, Einband, Gliederung, Hörbuch – jedes Werkzeug wirkt sofort, kostenlos und ohne Anmeldung. Alles, was du damit erschaffst, fließt später in dein Buch.</p>
 <div class="tools">
 {{TOOLS}}
 </div>
 </section>
 
 <section id="so-gehts" class="wrap block">
-<p class="eyebrow">So schreibst du dein Buch</p>
-<h2 class="h serif">Die KI kennt deine Geschichte schon. Der Selfpublishbot macht ein Buch daraus.</h2>
+<p class="eyebrow">Wie ein Buch entsteht</p>
+<h2 class="h serif">Deine Geschichte steht längst in deinen Chats. Die Bibliothek bindet sie zum Buch.</h2>
 <p class="lead">Am stärksten wird es, wenn die KI zusammenfasst, was du bis jetzt mit ihr erlebt und besprochen hast. Du kannst aber auch bei null anfangen.</p>
 <div class="steps" id="steps"></div>
 </section>
 
 <section class="wrap block">
-<h2 class="serif" style="margin:0 0 20px;font-size:32px;font-weight:600">Du entscheidest, wer es liest</h2>
+<h2 class="serif" style="margin:0 0 20px;font-size:34px;font-weight:600">Du entscheidest, wer es liest</h2>
 <div class="three">
-<div class="mini"><h3>Privat</h3><p>Nur für dich, als Archiv deines Lebens.</p></div>
-<div class="mini"><h3>Familie und Freunde</h3><p>Per Link teilen oder gedruckt verschenken.</p></div>
-<div class="mini"><h3>Öffentlich im Regal</h3><p>Namen anderer Menschen macht die KI vorher unkenntlich.</p></div>
+<div class="mini"><h3>Das verschlossene Archiv</h3><p>Nur für dich – das Buch deines Lebens, sicher verwahrt.</p></div>
+<div class="mini"><h3>Der Lesesaal</h3><p>Für Familie und Freunde – per Link geteilt oder gedruckt verschenkt.</p></div>
+<div class="mini"><h3>Das öffentliche Regal</h3><p>Für alle, mit Sternen und Rezensionen. Namen anderer Menschen macht die KI vorher unkenntlich.</p></div>
 </div>
 </section>
 
+<section id="siegel" class="wrap block">
+<div class="orn" aria-hidden="true"><span>✦</span></div>
+<div class="sectitle"><h2 class="serif">Das Siegel der Bibliothek</h2><p class="note">Jedes Buch wird von der KI gelesen, eingeordnet und mit einer Altersempfehlung versiegelt, bevor es ins öffentliche Regal darf.</p></div>
+<div class="seals" id="sealRow"></div>
+<p style="text-align:center;margin:0"><a class="btn btn-ghost" href="/bibliotheksordnung.html">Die Bibliotheksordnung lesen</a></p>
+</section>
+
 <section id="start" class="final">
-<h2 class="serif">Dein Buch ist schon in deinen Chats. Hol es raus.</h2>
-<p style="margin:16px auto 0;font-size:17px;color:var(--mute);max-width:560px">Der Selfpublishbot startet bald als Connector für Claude und ChatGPT. Trag dich ein, dann sagen wir dir Bescheid.</p>
+<div class="orn" aria-hidden="true"><span>✦</span></div>
+<h2 class="serif">In jedem Menschen wartet ein Buch. Deins hat schon einen Platz im Regal.</h2>
+<p style="margin:16px auto 0;font-size:18px;color:var(--mute);max-width:580px">Der Selfpublishbot öffnet bald seine Türen – als Connector für Claude und ChatGPT. Trag dich ein, dann senden wir dir die Einladung.</p>
 <div class="row" style="margin-top:28px">
-<a class="btn btn-primary" href="mailto:marcel@offmarketpool.com?subject=Warteliste%20Selfpublishbot&body=Ich%20m%C3%B6chte%20mein%20Buch%20mit%20dem%20Selfpublishbot%20ver%C3%B6ffentlichen.">Auf die Warteliste</a>
+<a class="btn btn-primary" href="mailto:marcel@offmarketpool.com?subject=Warteliste%20Selfpublishbot&body=Ich%20m%C3%B6chte%20mein%20Buch%20mit%20dem%20Selfpublishbot%20ver%C3%B6ffentlichen.">Einladung anfordern</a>
 </div>
 </section>
 </main>

@@ -25,17 +25,22 @@ def head(title, desc, extra="", path="/"):
 <link rel="canonical" href="{DOMAIN}{path}">
 <meta property="og:url" content="{DOMAIN}{path}">
 <link rel="icon" href="{FAVICON}">
+<link rel="preload" href="/assets/fonts/cormorant-garamond-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/site.css">
+<link rel="stylesheet" href="/assets/magic.css">
+<meta name="theme-color" content="#0B0A12">
 {extra}</head>
 <body>
 <header>
 <div class="wrap">
 <a class="logo" href="/">{LOGO}<span class="serif">Selfpublishbot</span></a>
 <nav aria-label="Hauptnavigation">
-<a href="/#buecher">Bücher</a>
-<a href="/#autoren">Autoren</a>
-<a href="/#tools">Tools</a>
-<a class="btn btn-primary" href="/#start">Buch schreiben</a>
+<a href="/#buecher">Das Regal</a>
+<a href="/#bestenliste">Bestenliste</a>
+<a href="/#autoren">Chronisten</a>
+<a href="/#tools">Werkzeuge</a>
+<a href="/bibliotheksordnung.html">Ordnung</a>
+<a class="btn btn-primary" href="/#bot">Buch schreiben</a>
 </nav>
 </div>
 </header>
@@ -43,8 +48,8 @@ def head(title, desc, extra="", path="/"):
 
 FOOT = '''<footer>
 <div class="wrap">
-<span>© 2026 Selfpublishbot · Dr. Hofeditz Real Estate GmbH, Hamburg</span>
-<span style="display:flex;gap:20px;flex-wrap:wrap"><a href="/#tools">Tools</a><a href="/impressum.html">Impressum</a><a href="/datenschutz.html">Datenschutz</a></span>
+<span>© 2026 Selfpublishbot · Die Bibliothek der erzählten Leben · Dr. Hofeditz Real Estate GmbH, Hamburg</span>
+<span style="display:flex;gap:20px;flex-wrap:wrap"><a href="/#tools">Tools</a><a href="/bibliotheksordnung.html">Bibliotheksordnung</a><a href="/impressum.html">Impressum</a><a href="/datenschutz.html">Datenschutz</a></span>
 </div>
 </footer>
 '''
@@ -65,7 +70,7 @@ TOOLS = json.loads((PARTS / "tools.json").read_text(encoding="utf-8"))
 def tool_cards():
     out = []
     for t in TOOLS:
-        out.append(f'<a class="tool" href="/tools/{t["slug"]}.html"><span class="ic">{icon(t["icon"])}</span><h3>{html.escape(t["name"])}</h3><p>{html.escape(t["card"])}</p><span class="go">Kostenlos testen →</span></a>')
+        out.append(f'<a class="tool" href="/tools/{t["slug"]}.html"><span class="ic">{icon(t["icon"])}</span><h3>{html.escape(t["name"])}</h3><p>{html.escape(t["card"])}</p><span class="go">Werkzeug nehmen →</span></a>')
     return "\n".join(out)
 
 # ---------- Startseite ----------
@@ -81,7 +86,7 @@ def build_index():
     extra = f'<script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>\n'
     doc = head("Selfpublishbot – Veröffentliche dein Buch mit KI",
                "Erzähl dein Buch in einem Satz – der Selfpublishbot macht Titel, Cover, Klappentext und die erste Seite daraus. Kostenlose KI-Tools für Selfpublisher.", extra)
-    doc += page + FOOT + '<script type="importmap">{"imports":{"three":"/assets/vendor/three/three.module.js","three/addons/":"/assets/vendor/three/addons/"}}</script>\n<script type="module" src="/assets/book3d.js?v=3"></script>\n<script src="/assets/covers.js"></script>\n<script src="/assets/app.js"></script>\n<script>\n' + (PARTS / "index.js").read_text(encoding="utf-8") + '\n</script>\n</body>\n</html>\n'
+    doc += page + FOOT + '<script type="importmap">{"imports":{"three":"/assets/vendor/three/three.module.js","three/addons/":"/assets/vendor/three/addons/"}}</script>\n<script type="module" src="/assets/book3d.js?v=3"></script>\n<script src="/assets/covers.js"></script>\n<script src="/assets/magic.js"></script>\n<script src="/assets/app.js"></script>\n<script>\n' + (PARTS / "index.js").read_text(encoding="utf-8") + '\n</script>\n</body>\n</html>\n'
     doc = doc.replace('{{SCRIPT}}', '')
     (ROOT / "index.html").write_text(doc, encoding="utf-8")
 
@@ -122,15 +127,70 @@ def build_tool(t):
 </section>
 </main>
 '''
-    doc += FOOT + '<script src="/assets/covers.js"></script>\n<script src="/assets/app.js"></script>\n<script src="/assets/tools.js"></script>\n</body>\n</html>\n'
+    doc += FOOT + '<script src="/assets/covers.js"></script>\n<script src="/assets/magic.js"></script>\n<script src="/assets/app.js"></script>\n<script src="/assets/tools.js"></script>\n</body>\n</html>\n'
     (ROOT / "tools" / f'{t["slug"]}.html').write_text(doc, encoding="utf-8")
+
+# ---------- Bibliotheksordnung ----------
+def build_ordnung():
+    seals = "".join(f'<div class="it"><span class="seal s{a} big"><span><small>AB</small>{a}</span></span><b>{n}</b><span>{d}</span></div>' for a, n, d in [
+        (0, "Für alle", "Keine Ängste, keine Gewalt."), (6, "Ab 6", "Leichte Spannung, kindgerecht aufgelöst."),
+        (12, "Ab 12", "Ernste Themen, Verlust, Streit – ohne drastische Details."),
+        (16, "Ab 16", "Gewalt, Rausch, Horror, seelische Abgründe, Andeutungen unter Erwachsenen."),
+        (18, "Ab 18", "Drastische Gewalt, explizite einvernehmliche Szenen unter Erwachsenen. Nur nach Altersprüfung.")])
+    body = f"""<main class="law">
+<p class="crumb"><a href="/">Selfpublishbot</a> › Bibliotheksordnung</p>
+<p class="eyebrow">Die Bibliothek der erzählten Leben</p>
+<h1 class="serif">Die Bibliotheksordnung</h1>
+<p>Jede Geschichte darf erzählt werden – aber nicht jede gehört ins öffentliche Regal. Diese Ordnung regelt, wie Bücher eingeordnet werden, was wir nicht aufnehmen und wie Bewertungen funktionieren. Stand: November 2026.</p>
+
+<h2 class="serif">1. Das Siegel: Altersempfehlung für jedes Buch</h2>
+<p>Bevor ein Buch ins öffentliche Regal kommt, liest die KI der Bibliothek den Text, ordnet Genre und Inhalte ein und vergibt ein Siegel. Das Siegel ist eine eigene Empfehlung der Bibliothek – keine amtliche Freigabe und keine Kennzeichnung der FSK oder USK.</p>
+<div class="seals">{seals}</div>
+<p>Zusätzlich nennt die KI Inhaltshinweise (z. B. „Gewalt“, „Verlust“, „Rausch“), damit Leserinnen und Leser vorher wissen, worauf sie sich einlassen. Ist sich die KI unsicher, liest ein Mensch gegen, bevor das Buch erscheint. Bücher mit dem Siegel „ab 18“ werden erst nach einer Altersprüfung zugänglich.</p>
+
+<h2 class="serif">2. Was nie ins Regal kommt</h2>
+<div class="box no"><h3>Absolute Grenzen</h3><ul>
+<li>Jede sexuelle oder sexualisierte Darstellung von Minderjährigen – auch fiktiv, auch angedeutet.</li>
+<li>Pornografie sowie sexuelle Inhalte über reale, erkennbare Personen.</li>
+<li>Anleitungen zum Bau von Waffen oder Sprengstoff, zur Herstellung von Drogen, zu Selbstverletzung oder Suizid.</li>
+<li>Verherrlichung von Terror, Völkermord oder Gewalt gegen Menschengruppen.</li>
+<li>Hetze gegen Menschen wegen Herkunft, Religion, Geschlecht, Behinderung oder sexueller Orientierung.</li>
+<li>Bloßstellung, Verleumdung oder private Daten realer Privatpersonen ohne deren Einverständnis.</li>
+<li>Kopien fremder, urheberrechtlich geschützter Werke.</li>
+</ul></div>
+<div class="box"><h3>Erlaubt, mit passendem Siegel</h3><ul>
+<li>Schweres im eigenen Leben: Krankheit, Sucht, Trauer, Gewalt, die man erlebt hat – ehrlich erzählt, ohne Anleitung.</li>
+<li>Krimis, Thriller und Horror mit Gewalt im Dienst der Geschichte.</li>
+<li>Liebe und Sexualität unter Erwachsenen – angedeutet ab 16, explizit nur ab 18 und nach Altersprüfung.</li>
+<li>Kritik an Personen des öffentlichen Lebens, Firmen und Institutionen, solange sie auf Tatsachen beruht.</li>
+</ul></div>
+
+<h2 class="serif">3. Echte Menschen in deinem Buch</h2>
+<p>Lebensgeschichten handeln von echten Menschen. Für das öffentliche Regal macht die KI Namen von Privatpersonen vorher unkenntlich. Wer sich in einem Buch erkennt und verletzt fühlt, kann sich jederzeit an uns wenden – wir prüfen das Buch dann von Hand.</p>
+
+<h2 class="serif">4. Sterne, Rezensionen und die Bestenliste</h2>
+<ul>
+<li>Jede Leserin und jeder Leser vergibt 1 bis 5 Sterne – eine Stimme je Gerät und Buch. Wer erneut bewertet, ändert seine eigene Stimme.</li>
+<li>Rezensionen erscheinen öffentlich. Beleidigungen, Werbung, Spam und persönliche Angriffe auf Autorinnen und Autoren entfernen wir.</li>
+<li>Die Bestenliste sortiert nach einer gewichteten Sternewertung: Wenige Stimmen zählen weniger, damit ein einzelnes Lob nicht für Platz 1 reicht.</li>
+<li>Gekaufte oder selbst geschriebene Bewertungen sind verboten und führen zum Ausschluss des Buchs aus der Bestenliste.</li>
+</ul>
+
+<h2 class="serif">5. Melden</h2>
+<p>Du hast ein Buch oder eine Rezension gefunden, die gegen diese Ordnung verstößt? Schreib uns an <a href="mailto:marcel@offmarketpool.com?subject=Meldung%20Selfpublishbot">marcel@offmarketpool.com</a> mit dem Titel des Buchs. Wir prüfen jede Meldung.</p>
+</main>
+"""
+    doc = head("Bibliotheksordnung – Selfpublishbot", "Wie die Bibliothek Bücher einordnet: Altersempfehlung ab 0, 6, 12, 16 und 18, Inhaltshinweise, was nie ins Regal kommt und wie Sterne und Bestenliste funktionieren.", "", "/bibliotheksordnung.html")
+    doc += body + FOOT + '<script src="/assets/magic.js"></script>\n</body>\n</html>\n'
+    (ROOT / "bibliotheksordnung.html").write_text(doc, encoding="utf-8")
 
 if __name__ == "__main__":
     (ROOT / "tools").mkdir(exist_ok=True)
     build_index()
+    build_ordnung()
     for t in TOOLS:
         build_tool(t)
-    urls = ["/"] + [f'/tools/{t["slug"]}.html' for t in TOOLS]
+    urls = ["/", "/bibliotheksordnung.html"] + [f'/tools/{t["slug"]}.html' for t in TOOLS]
     (ROOT / "sitemap.xml").write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + "".join(f"<url><loc>{DOMAIN}{u}</loc></url>\n" for u in urls) + "</urlset>\n", encoding="utf-8")
     (ROOT / "robots.txt").write_text(f"User-agent: *\nAllow: /\nSitemap: {DOMAIN}/sitemap.xml\n", encoding="utf-8")
     print("ok:", 1 + len(TOOLS), "Seiten")
