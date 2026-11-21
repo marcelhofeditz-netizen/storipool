@@ -1,0 +1,100 @@
+<main>
+<section class="bot" id="bot">
+<div>
+<h1 class="serif">Erzähl mir dein Buch <em>in einem Satz.</em></h1>
+<p class="lede">Der Selfpublishbot macht daraus in Sekunden Titel, Cover, Klappentext, Inhaltsverzeichnis und die erste Seite – und liest sie dir vor.</p>
+<form class="ask" id="askForm" autocomplete="off">
+<label for="ask" class="sr" style="position:absolute;left:-9999px">Dein Buch in einem Satz</label>
+<textarea id="ask" rows="2" maxlength="400" placeholder="z. B. Ein Mann verliert mit 50 seinen Job und segelt allein nach Portugal."></textarea>
+<button class="btn btn-primary" type="submit" id="askBtn">Buch machen</button>
+</form>
+<div class="ideas" id="ideas"></div>
+<p class="status" id="botStatus" role="status" aria-live="polite"></p>
+</div>
+<div class="stage">
+<div class="scene" id="scene">
+<div class="b3d idle" id="b3d">
+<div class="face f" id="bFront"></div>
+<div class="face k" id="bBack"><h4>Dein Buch</h4><p>Schreib oben einen Satz. Hier erscheint gleich dein Klappentext.</p><div class="bc"><span>Selfpublishbot</span><i></i></div></div>
+<div class="spine"><span id="bSpine">Selfpublishbot</span></div>
+<div class="pages"></div>
+</div>
+<div class="shadow"></div>
+</div>
+<div class="spread" id="spread">
+<div class="pg"><h4>Inhalt</h4><ol id="toc"></ol></div>
+<div class="pg"><h4>Kapitel 1</h4><div id="page1"></div></div>
+</div>
+<div class="ctrl" id="ctrl" hidden>
+<button class="chip" type="button" data-v="front">Cover</button>
+<button class="chip" type="button" data-v="back">Klappentext</button>
+<button class="chip" type="button" data-v="open">Aufschlagen</button>
+<button class="chip" type="button" id="readBtn">▶ Vorlesen</button>
+</div>
+<a class="btn btn-primary" href="#start" id="writeOn" hidden>Dieses Buch fertig schreiben</a>
+</div>
+</section>
+
+<section id="buecher" class="wrap block" style="padding-top:56px">
+<div class="sectitle"><h2 class="serif">Echte Bücher – lesen und hören</h2><p class="note">Mit KI geschrieben, von Menschen erzählt</p></div>
+<div class="rb" id="realBooks"></div>
+</section>
+
+<section id="autoren" class="wrap block" style="padding-top:72px">
+<div class="sectitle"><h2 class="serif">Die Autoren</h2></div>
+<div class="authors" id="authors"></div>
+</section>
+
+<section id="tools" class="wrap block" style="padding-top:72px">
+<p class="eyebrow">Kostenlose Tools</p>
+<h2 class="h serif">Alles, was du fürs Selfpublishing brauchst.</h2>
+<p class="lead">Jedes Werkzeug funktioniert sofort und ohne Anmeldung – und alles, was du damit machst, fließt später in dein Buch.</p>
+<div class="tools">
+{{TOOLS}}
+</div>
+</section>
+
+<section id="so-gehts" class="wrap block">
+<p class="eyebrow">So schreibst du dein Buch</p>
+<h2 class="h serif">Die KI kennt deine Geschichte schon. Der Selfpublishbot macht ein Buch daraus.</h2>
+<p class="lead">Am stärksten wird es, wenn die KI zusammenfasst, was du bis jetzt mit ihr erlebt und besprochen hast. Du kannst aber auch bei null anfangen.</p>
+<div class="steps" id="steps"></div>
+</section>
+
+<section class="wrap block">
+<h2 class="serif" style="margin:0 0 20px;font-size:32px;font-weight:600">Du entscheidest, wer es liest</h2>
+<div class="three">
+<div class="mini"><h3>Privat</h3><p>Nur für dich, als Archiv deines Lebens.</p></div>
+<div class="mini"><h3>Familie und Freunde</h3><p>Per Link teilen oder gedruckt verschenken.</p></div>
+<div class="mini"><h3>Öffentlich im Regal</h3><p>Namen anderer Menschen macht die KI vorher unkenntlich.</p></div>
+</div>
+</section>
+
+<section id="start" class="final">
+<h2 class="serif">Dein Buch ist schon in deinen Chats. Hol es raus.</h2>
+<p style="margin:16px auto 0;font-size:17px;color:var(--mute);max-width:560px">Der Selfpublishbot startet bald als Connector für Claude und ChatGPT. Trag dich ein, dann sagen wir dir Bescheid.</p>
+<div class="row" style="margin-top:28px">
+<a class="btn btn-primary" href="mailto:marcel@offmarketpool.com?subject=Warteliste%20Selfpublishbot&body=Ich%20m%C3%B6chte%20mein%20Buch%20mit%20dem%20Selfpublishbot%20ver%C3%B6ffentlichen.">Auf die Warteliste</a>
+</div>
+</section>
+</main>
+
+<dialog id="dlg" aria-labelledby="dTitle">
+<div class="dlg">
+<div class="dhead">
+<button class="x" type="button" id="dClose" aria-label="Schließen">×</button>
+<div class="cv" id="dCover"></div>
+<div class="dinfo">
+<p class="k" id="dKind"></p>
+<h2 class="serif" id="dTitle"></h2>
+<p class="st" id="dSub"></p>
+<p class="by" id="dBy"></p>
+<div id="dBlurb"></div>
+</div>
+</div>
+<div class="tabs" role="tablist" id="dTabs"></div>
+<div class="pane" id="dPane"></div>
+</div>
+</dialog>
+
+{{TEMPLATE}}
