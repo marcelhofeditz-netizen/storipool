@@ -1,2 +1,2 @@
-# storipool
-Storipool – Website (storipool.de)
+# selfpublishbot
+Selfpublishbot – Website (selfpublishbot.de)
