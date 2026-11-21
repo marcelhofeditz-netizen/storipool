@@ -115,7 +115,8 @@ function run(){var t=ask.value.trim();if(busy)return;if(t.length<8){st.textConte
  A.callBot('book',t).then(function(d){clearInterval(iv);busy=false;btn.disabled=false;
   cur={title:d.title||'Ohne Titel',subtitle:d.subtitle||'',genre:d.genre||'Roman',author:'Dein Name',motif:SPB.M[d.motif]?d.motif:'moonsea',pal:P[d.palette]||P.night,font:/thriller|krimi|sci|sachbuch|ratgeber/i.test(d.genre||'')?'caps':'serif',pos:'top',blurb:d.blurb||'',chapters:(d.chapters||[]).slice(0,10),firstPage:d.firstPage||''};
   front.innerHTML=cover(cur,true);spine.textContent=cur.title;
-  if(window.Book3D){SPB.coverCanvas(cur,1024,1376,function(c){Book3D.setCover(c);});Book3D.setBack(backCanvas(cur));}
+  if(window.Book3D){SPB.coverCanvas(cur,600,900,function(c){Book3D.setCover(c,cur.title,cur.genre);});Book3D.setBack(backCanvas(cur));
+   setTimeout(function(){if(reading||!cur)return;Book3D.talking(true);A.speak('Fertig! Dein Buch heißt: '+cur.title+'.',function(){Book3D.talking(false);});},600);}
   back.innerHTML='<h4>'+esc(cur.title)+'</h4>'+paras(cur.blurb).map(function(p){return '<p>'+esc(p)+'</p>';}).join('')+'<div class="bc"><span>'+esc(cur.genre)+' · Selfpublishbot</span><i></i></div>';
   document.getElementById('toc').innerHTML=cur.chapters.map(function(c){return '<li>'+esc(c)+'</li>';}).join('');
   st.textContent='„'+cur.title+'“ – '+cur.genre+(cur.subtitle?' · '+cur.subtitle:'');
@@ -125,12 +126,12 @@ function run(){var t=ask.value.trim();if(busy)return;if(t.length<8){st.textConte
   later(function(){view('open');typeOut(false);},7600);});}
 form.onsubmit=function(e){e.preventDefault();run();};
 ask.addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();run();}});
-function backCanvas(b){var W=1024,H=1376,c=document.createElement('canvas');c.width=W;c.height=H;var x=c.getContext('2d');
- x.fillStyle='#F4EFE4';x.fillRect(0,0,W,H);x.fillStyle='#2A2622';x.textBaseline='top';
- x.font='600 68px Georgia,serif';var y=110;wrapT(x,b.title.toUpperCase(),110,W-220).forEach(function(l){x.fillText(l,110,y);y+=80;});y+=34;
- x.font='44px Georgia,serif';paras(b.blurb).forEach(function(p){wrapT(x,p,110,W-220).forEach(function(l){if(y<H-280)x.fillText(l,110,y);y+=62;});y+=30;});
- x.font='32px Helvetica,Arial,sans-serif';x.fillStyle='#6B645B';x.fillText(b.genre+' · Selfpublishbot',110,H-150);
- x.fillStyle='#2A2622';for(var i=0,bx=W-330;i<46;i++){var bw=(i*7%5===0)?6:3;x.fillRect(bx,H-200,bw,110);bx+=bw+((i*3)%4)+2;}return c;}
+function backCanvas(b){var W=1024,H=1024,c=document.createElement('canvas');c.width=W;c.height=H;var x=c.getContext('2d');
+ x.fillStyle='#EADCBC';x.fillRect(0,0,W,H);x.fillStyle='#2A2622';x.textBaseline='top';
+ x.font='600 60px Georgia,serif';var y=90;wrapT(x,b.title.toUpperCase(),110,W-220).forEach(function(l){x.fillText(l,110,y);y+=80;});y+=34;
+ x.font='40px Georgia,serif';paras(b.blurb).forEach(function(p){wrapT(x,p,110,W-220).forEach(function(l){if(y<H-200)x.fillText(l,110,y);y+=62;});y+=30;});
+ x.font='32px Helvetica,Arial,sans-serif';x.fillStyle='#6B645B';x.fillText(b.genre+' · Selfpublishbot',110,H-110);
+ x.fillStyle='#2A2622';for(var i=0,bx=W-330;i<46;i++){var bw=(i*7%5===0)?6:3;x.fillRect(bx,H-170,bw,100);bx+=bw+((i*3)%4)+2;}return c;}
 function wrapT(x,t,_,max){var w=String(t).split(/\s+/),l=[],cur2='';w.forEach(function(s){var tt=cur2?cur2+' '+s:s;if(x.measureText(tt).width>max&&cur2){l.push(cur2);cur2=s;}else cur2=tt;});if(cur2)l.push(cur2);return l;}
 var reading=false,rb2=document.getElementById('readBtn');
 rb2.onclick=function(){if(!cur)return;if(reading){A.stopSpeak();if(window.Book3D)Book3D.talking(false);reading=false;rb2.textContent='▶ Vorlesen';return;}
