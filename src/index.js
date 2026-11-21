@@ -173,9 +173,9 @@ renderStats();
 
 /* ---------- Mit dem Buch sprechen (ElevenLabs-Agent über /api/voice; Rückfall: Spracherkennung + Satz) ---------- */
 window.conv=null;var connecting=false,voiceOff=false,ELmod=null,saidByUser=[],built=false;
-var micBtn=document.getElementById('micBtn'),vHint=document.getElementById('voiceHint');
+var micBtn=document.getElementById('micBtn'),micLabel=document.getElementById('micLabel'),vHint={set textContent(v){st.textContent=v;}};
 window.Book3D=window.Book3D||{};Book3D.level=function(){if(conv){try{return Math.min(1,conv.getOutputVolume()*2.2);}catch(e){return 0;}}return A.level?A.level():0;};
-function micUi(){micBtn.setAttribute('aria-pressed',String(!!conv));micBtn.textContent=connecting?'… verbinde':conv?'■ Gespräch beenden':'🎙 Sprich mit dem Buch';}
+function micUi(){micBtn.setAttribute('aria-pressed',String(!!conv));micBtn.classList.toggle('live',!!conv);micBtn.classList.toggle('wait',connecting);micLabel.textContent=connecting?'Das Buch erwacht …':conv?'Ich höre zu – tippen zum Beenden':'Drück aufs Mikro und erzähl';}
 function loadEL(){return ELmod||(ELmod=import('https://esm.sh/@elevenlabs/client@1.36.1'));}
 function bauen(satz){return new Promise(function(res){ask.value=satz;built=true;run(function(c){res('Das Buch steht auf dem Pergament. Titel: '+c.title+'. Genre: '+c.genre+'. Klappentext: '+String(c.blurb).slice(0,280));});if(!busy)res('Das hat nicht geklappt.');setTimeout(function(){res('Die Bibliothek konnte dieses Buch nicht binden – frag nach einer anderen Geschichte.');},25000);});}
 async function startVoice(){
@@ -192,11 +192,14 @@ async function startVoice(){
  }catch(e){console.error(e);voiceOff=true;conv=null;connecting=false;micUi();return false;}}
 function stopVoice(){if(!conv)return;var c=conv;conv=null;micUi();c.endSession().catch(function(){});}
 var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-function listenOnce(){if(!SR){vHint.textContent='Dein Browser kann leider nicht zuhören – schreib deinen Satz einfach ins Feld.';ask.focus();return;}
- var rec=new SR();rec.lang='de-DE';rec.interimResults=true;var txt='';vHint.textContent='Ich höre zu … erzähl mir deine Geschichte in einem Satz.';micBtn.textContent='… ich höre';Book3D.state&&Book3D.state('front');
+function listenOnce(){if(!SR){vHint.textContent='Dein Browser kann leider nicht zuhören – schreib deine Geschichte einfach auf.';if(af.hidden)tt.click();return;}
+ var rec=new SR();rec.lang='de-DE';rec.interimResults=true;var txt='';vHint.textContent='Ich höre zu … erzähl mir deine Geschichte in einem Satz.';micLabel.textContent='Ich höre zu …';micBtn.classList.add('live');Book3D.state&&Book3D.state('front');
  rec.onresult=function(e){txt='';for(var i=0;i<e.results.length;i++)txt+=e.results[i][0].transcript;ask.value=txt;};
- rec.onend=function(){micUi();if(txt.trim().length>8){vHint.textContent='Verstanden.';run();}else vHint.textContent='Ich habe nichts gehört – versuch es nochmal.';};
+ rec.onend=function(){micBtn.classList.remove('live');micUi();if(txt.trim().length>8){vHint.textContent='Verstanden.';run();}else vHint.textContent='Ich habe nichts gehört – versuch es nochmal.';};
  rec.onerror=function(ev){micUi();if(ev.error==='not-allowed')vHint.textContent='Bitte erlaube das Mikrofon – oder schreib einfach ins Feld.';};
  try{rec.start();}catch(e){micUi();}}
 micBtn.onclick=function(){if(conv){stopVoice();return;}if(connecting)return;startVoice().then(function(ok){if(!ok)listenOnce();});};
+
+var tt=document.getElementById('typeToggle'),af=document.getElementById('askForm'),ide=document.getElementById('ideas');
+tt.onclick=function(){var open=af.hidden;af.hidden=!open;ide.hidden=!open;tt.textContent=open?'lieber sprechen':'oder lieber tippen';if(open)ask.focus();};
 })();

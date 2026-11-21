@@ -251,3 +251,25 @@ html,body{overflow-x:hidden}
 .voicebar{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;margin-top:12px}
 .voicebar .btn{min-height:42px;padding:9px 18px}
 .voicebar .note{font-size:14px}
+/* ===== Hero clean (wie Trainingsbot): Buch + Mikro ===== */
+.sr-only{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.bot.hero2{display:flex;flex-direction:column;align-items:center;grid-template-columns:none;gap:0;padding:0 16px 40px;max-width:760px;text-align:center}
+.hero2 .stage{min-height:0;width:100%}
+.hero2 .stage.r3d .scene{width:min(560px,96vw);height:min(560px,96vw,58vh);min-height:320px}
+.hero2 .talk{display:flex;flex-direction:column;align-items:center;gap:12px;width:100%;margin-top:4px}
+.hero2 .bubble{margin:0;max-width:560px;min-height:1.6em;padding:12px 18px;border-radius:16px;background:rgba(242,231,207,.94);color:#2B1A12;font-family:var(--disp,Georgia,serif);font-size:19px;line-height:1.4;font-style:italic;box-shadow:0 8px 30px rgba(0,0,0,.4);position:relative}
+.hero2 .bubble::before{content:"";position:absolute;top:-8px;left:50%;margin-left:-8px;border:8px solid transparent;border-top:0;border-bottom-color:rgba(242,231,207,.94)}
+.hero2 .bubble:empty{display:none}
+.mic{width:86px;height:86px;border-radius:50%;border:0;cursor:pointer;color:#2B1A12;background:radial-gradient(circle at 35% 30%,#FFE7A8,#E7B85A 55%,#A9762E);box-shadow:0 0 0 6px rgba(242,181,68,.18),0 10px 30px rgba(0,0,0,.5),0 0 40px rgba(242,181,68,.35);display:flex;align-items:center;justify-content:center;transition:transform .15s}
+.mic:hover{transform:scale(1.05)}
+.mic.live{animation:micPulse 1.4s ease-in-out infinite}
+.mic.wait{opacity:.7}
+@keyframes micPulse{0%,100%{box-shadow:0 0 0 6px rgba(242,181,68,.25),0 0 40px rgba(242,181,68,.4)}50%{box-shadow:0 0 0 18px rgba(242,181,68,.06),0 0 70px rgba(242,181,68,.7)}}
+.micLabel{margin:0;font-size:15px;letter-spacing:.06em;color:var(--mute)}
+.typeToggle{background:none;border:0;color:var(--mute2);font:inherit;font-size:14px;text-decoration:underline;cursor:pointer;padding:6px}
+.hero2 .ask{width:100%;max-width:560px;margin-top:4px}
+.hero2 .ideas{justify-content:center}
+.hero2 .ctrl,.hero2 #writeOn{margin-top:8px}
+@media (max-width:640px){.hero2 .bubble{font-size:17px}.hero2 .stage.r3d .scene{height:min(78vw,48vh)}}
+.hero2 .spread{text-align:left}
+@media (max-width:640px){header nav a:not(.btn){display:none}header .wrap{flex-wrap:nowrap}}

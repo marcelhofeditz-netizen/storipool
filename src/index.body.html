@@ -1,18 +1,6 @@
 <main>
-<section class="bot" id="bot">
-<div>
-<p class="eyebrow" style="margin-bottom:14px">Die Bibliothek der erzählten Leben</p>
-<h1 class="serif">Flüstere der Bibliothek <em>deine Geschichte.</em></h1>
-<p class="lede">Ein Satz genügt. Dann schreibt die Feder von selbst: Titel, Einband, Klappentext, Inhaltsverzeichnis und die erste Seite – und eine Stimme liest sie dir vor.</p>
-<form class="ask" id="askForm" autocomplete="off">
-<label for="ask" class="sr" style="position:absolute;left:-9999px">Dein Buch in einem Satz</label>
-<textarea id="ask" rows="2" maxlength="400" placeholder="Es war einmal …"></textarea>
-<button class="btn btn-primary" type="submit" id="askBtn">Feder ansetzen ✒</button>
-</form>
-<div class="voicebar"><button class="btn btn-ghost" type="button" id="micBtn" aria-pressed="false">🎙 Sprich mit dem Buch</button><span class="note" id="voiceHint">Erzähl ihm deine Geschichte – es fragt nach und schreibt mit.</span></div>
-<div class="ideas" id="ideas"></div>
-<p class="status" id="botStatus" role="status" aria-live="polite"></p>
-</div>
+<section class="bot hero2" id="bot">
+<h1 class="sr-only">Selfpublishbot – erzähl dem Zauberbuch deine Geschichte und veröffentliche dein Buch mit KI</h1>
 <div class="stage">
 <div class="scene" id="scene">
 <canvas id="book3d" aria-label="3D-Buch – zum Drehen ziehen"></canvas>
@@ -36,6 +24,18 @@
 </div>
 <div id="botSeal" class="rmeta" hidden></div>
 <a class="btn btn-primary" href="#start" id="writeOn" hidden>Dieses Buch zu Ende schreiben</a>
+</div>
+<div class="talk">
+<p class="bubble" id="botStatus" role="status" aria-live="polite">Psst … ich bin das Buch der erzählten Leben. Erzähl mir deine Geschichte – ich schreibe sie auf.</p>
+<button class="mic" type="button" id="micBtn" aria-pressed="false" aria-label="Mit dem Buch sprechen"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
+<p class="micLabel" id="micLabel">Drück aufs Mikro und erzähl</p>
+<button class="typeToggle" type="button" id="typeToggle">oder lieber tippen</button>
+<form class="ask" id="askForm" autocomplete="off" hidden>
+<label for="ask" class="sr-only">Dein Buch in einem Satz</label>
+<textarea id="ask" rows="2" maxlength="400" placeholder="Es war einmal …"></textarea>
+<button class="btn btn-primary" type="submit" id="askBtn">Feder ansetzen ✒</button>
+</form>
+<div class="ideas" id="ideas" hidden></div>
 </div>
 </section>
 

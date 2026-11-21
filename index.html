@@ -32,20 +32,8 @@
 </div>
 </header>
 <main>
-<section class="bot" id="bot">
-<div>
-<p class="eyebrow" style="margin-bottom:14px">Die Bibliothek der erzählten Leben</p>
-<h1 class="serif">Flüstere der Bibliothek <em>deine Geschichte.</em></h1>
-<p class="lede">Ein Satz genügt. Dann schreibt die Feder von selbst: Titel, Einband, Klappentext, Inhaltsverzeichnis und die erste Seite – und eine Stimme liest sie dir vor.</p>
-<form class="ask" id="askForm" autocomplete="off">
-<label for="ask" class="sr" style="position:absolute;left:-9999px">Dein Buch in einem Satz</label>
-<textarea id="ask" rows="2" maxlength="400" placeholder="Es war einmal …"></textarea>
-<button class="btn btn-primary" type="submit" id="askBtn">Feder ansetzen ✒</button>
-</form>
-<div class="voicebar"><button class="btn btn-ghost" type="button" id="micBtn" aria-pressed="false">🎙 Sprich mit dem Buch</button><span class="note" id="voiceHint">Erzähl ihm deine Geschichte – es fragt nach und schreibt mit.</span></div>
-<div class="ideas" id="ideas"></div>
-<p class="status" id="botStatus" role="status" aria-live="polite"></p>
-</div>
+<section class="bot hero2" id="bot">
+<h1 class="sr-only">Selfpublishbot – erzähl dem Zauberbuch deine Geschichte und veröffentliche dein Buch mit KI</h1>
 <div class="stage">
 <div class="scene" id="scene">
 <canvas id="book3d" aria-label="3D-Buch – zum Drehen ziehen"></canvas>
@@ -69,6 +57,18 @@
 </div>
 <div id="botSeal" class="rmeta" hidden></div>
 <a class="btn btn-primary" href="#start" id="writeOn" hidden>Dieses Buch zu Ende schreiben</a>
+</div>
+<div class="talk">
+<p class="bubble" id="botStatus" role="status" aria-live="polite">Psst … ich bin das Buch der erzählten Leben. Erzähl mir deine Geschichte – ich schreibe sie auf.</p>
+<button class="mic" type="button" id="micBtn" aria-pressed="false" aria-label="Mit dem Buch sprechen"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
+<p class="micLabel" id="micLabel">Drück aufs Mikro und erzähl</p>
+<button class="typeToggle" type="button" id="typeToggle">oder lieber tippen</button>
+<form class="ask" id="askForm" autocomplete="off" hidden>
+<label for="ask" class="sr-only">Dein Buch in einem Satz</label>
+<textarea id="ask" rows="2" maxlength="400" placeholder="Es war einmal …"></textarea>
+<button class="btn btn-primary" type="submit" id="askBtn">Feder ansetzen ✒</button>
+</form>
+<div class="ideas" id="ideas" hidden></div>
 </div>
 </section>
 
@@ -196,7 +196,7 @@
 </div>
 </footer>
 <script type="importmap">{"imports":{"three":"/assets/vendor/three/three.module.js","three/addons/":"/assets/vendor/three/addons/"}}</script>
-<script type="module" src="/assets/book3d.js?v=4"></script>
+<script type="module" src="/assets/book3d.js?v=5"></script>
 <script src="/assets/covers.js"></script>
 <script src="/assets/magic.js"></script>
 <script src="/assets/app.js"></script>
@@ -376,9 +376,9 @@ renderStats();
 
 /* ---------- Mit dem Buch sprechen (ElevenLabs-Agent über /api/voice; Rückfall: Spracherkennung + Satz) ---------- */
 window.conv=null;var connecting=false,voiceOff=false,ELmod=null,saidByUser=[],built=false;
-var micBtn=document.getElementById('micBtn'),vHint=document.getElementById('voiceHint');
+var micBtn=document.getElementById('micBtn'),micLabel=document.getElementById('micLabel'),vHint={set textContent(v){st.textContent=v;}};
 window.Book3D=window.Book3D||{};Book3D.level=function(){if(conv){try{return Math.min(1,conv.getOutputVolume()*2.2);}catch(e){return 0;}}return A.level?A.level():0;};
-function micUi(){micBtn.setAttribute('aria-pressed',String(!!conv));micBtn.textContent=connecting?'… verbinde':conv?'■ Gespräch beenden':'🎙 Sprich mit dem Buch';}
+function micUi(){micBtn.setAttribute('aria-pressed',String(!!conv));micBtn.classList.toggle('live',!!conv);micBtn.classList.toggle('wait',connecting);micLabel.textContent=connecting?'Das Buch erwacht …':conv?'Ich höre zu – tippen zum Beenden':'Drück aufs Mikro und erzähl';}
 function loadEL(){return ELmod||(ELmod=import('https://esm.sh/@elevenlabs/client@1.36.1'));}
 function bauen(satz){return new Promise(function(res){ask.value=satz;built=true;run(function(c){res('Das Buch steht auf dem Pergament. Titel: '+c.title+'. Genre: '+c.genre+'. Klappentext: '+String(c.blurb).slice(0,280));});if(!busy)res('Das hat nicht geklappt.');setTimeout(function(){res('Die Bibliothek konnte dieses Buch nicht binden – frag nach einer anderen Geschichte.');},25000);});}
 async function startVoice(){
@@ -395,13 +395,16 @@ async function startVoice(){
  }catch(e){console.error(e);voiceOff=true;conv=null;connecting=false;micUi();return false;}}
 function stopVoice(){if(!conv)return;var c=conv;conv=null;micUi();c.endSession().catch(function(){});}
 var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-function listenOnce(){if(!SR){vHint.textContent='Dein Browser kann leider nicht zuhören – schreib deinen Satz einfach ins Feld.';ask.focus();return;}
- var rec=new SR();rec.lang='de-DE';rec.interimResults=true;var txt='';vHint.textContent='Ich höre zu … erzähl mir deine Geschichte in einem Satz.';micBtn.textContent='… ich höre';Book3D.state&&Book3D.state('front');
+function listenOnce(){if(!SR){vHint.textContent='Dein Browser kann leider nicht zuhören – schreib deine Geschichte einfach auf.';if(af.hidden)tt.click();return;}
+ var rec=new SR();rec.lang='de-DE';rec.interimResults=true;var txt='';vHint.textContent='Ich höre zu … erzähl mir deine Geschichte in einem Satz.';micLabel.textContent='Ich höre zu …';micBtn.classList.add('live');Book3D.state&&Book3D.state('front');
  rec.onresult=function(e){txt='';for(var i=0;i<e.results.length;i++)txt+=e.results[i][0].transcript;ask.value=txt;};
- rec.onend=function(){micUi();if(txt.trim().length>8){vHint.textContent='Verstanden.';run();}else vHint.textContent='Ich habe nichts gehört – versuch es nochmal.';};
+ rec.onend=function(){micBtn.classList.remove('live');micUi();if(txt.trim().length>8){vHint.textContent='Verstanden.';run();}else vHint.textContent='Ich habe nichts gehört – versuch es nochmal.';};
  rec.onerror=function(ev){micUi();if(ev.error==='not-allowed')vHint.textContent='Bitte erlaube das Mikrofon – oder schreib einfach ins Feld.';};
  try{rec.start();}catch(e){micUi();}}
 micBtn.onclick=function(){if(conv){stopVoice();return;}if(connecting)return;startVoice().then(function(ok){if(!ok)listenOnce();});};
+
+var tt=document.getElementById('typeToggle'),af=document.getElementById('askForm'),ide=document.getElementById('ideas');
+tt.onclick=function(){var open=af.hidden;af.hidden=!open;ide.hidden=!open;tt.textContent=open?'lieber sprechen':'oder lieber tippen';if(open)ask.focus();};
 })();
 </script>
 </body>
