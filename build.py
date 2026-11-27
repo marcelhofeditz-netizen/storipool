@@ -184,10 +184,39 @@ def build_ordnung():
     doc += body + FOOT + '<script src="/assets/magic.js"></script>\n</body>\n</html>\n'
     (ROOT / "bibliotheksordnung.html").write_text(doc, encoding="utf-8")
 
+def build_kauf():
+    body = """<main class="law" style="max-width:760px;margin:0 auto;padding:56px 24px 80px">
+<h1 class="serif" style="font-size:40px;margin:0 0 8px">Deine Hörbücher</h1>
+<p id="kStatus" class="note" role="status" aria-live="polite" style="font-size:16px">Einen Moment – ich hole deine Downloads …</p>
+<div id="kList"></div>
+<p class="note" style="margin-top:28px">Die Links gelten eine Stunde und werden bei jedem Öffnen dieser Seite neu erzeugt. Den Link zu dieser Seite hast du auch per E-Mail bekommen. Fragen? <a href="mailto:marcel@offmarketpool.com">marcel@offmarketpool.com</a></p>
+</main>
+<script>
+(function(){
+var id=new URLSearchParams(location.search).get('session_id'),st=document.getElementById('kStatus'),li=document.getElementById('kList');
+function esc(t){var d=document.createElement('div');d.textContent=t;return d.innerHTML;}
+if(!id){st.textContent='Kein Kauf gefunden. Bitte nutze den Link aus deiner E-Mail.';return;}
+fetch('https://offmarketpool.de/api/buecher/download?session_id='+encodeURIComponent(id)).then(function(r){return r.json().then(function(j){return {ok:r.ok,j:j};});}).then(function(x){
+ if(!x.ok){st.textContent=x.j&&x.j.error==='nicht_bezahlt'?'Die Zahlung ist noch nicht bestätigt. Bitte lade die Seite in einer Minute neu.':'Das hat nicht geklappt – bitte lade die Seite neu.';return;}
+ st.textContent='Danke für deinen Kauf! Viel Spaß beim Hören.';
+ x.j.buecher.forEach(function(b){var h='<h2 class="serif" style="margin:28px 0 2px">'+esc(b.titel)+'</h2><p class="note">'+esc(b.untertitel)+'</p>';
+  if(!b.dateien.length){h+='<p class="note" style="margin-top:10px">Die Dateien werden gerade bereitgestellt – du bekommst eine E-Mail, sobald sie da sind.</p>';}
+  else{h+='<ul class="dl-list">'+b.dateien.map(function(f){return '<li><a href="'+esc(f.url)+'" download="'+esc(f.name)+'"><span>'+esc(f.titel)+'</span><span>⬇ Download</span></a></li>';}).join('')+'</ul>';}
+  li.insertAdjacentHTML('beforeend',h);});
+}).catch(function(){st.textContent='Keine Verbindung – bitte lade die Seite neu.';});
+})();
+</script>
+"""
+    doc = head("Deine Hörbücher – Selfpublishbot", "Download deiner gekauften Hörbücher.", '<meta name="robots" content="noindex">', "/kauf.html")
+    doc += body + FOOT + "</body>\n</html>\n"
+    (ROOT / "kauf.html").write_text(doc, encoding="utf-8")
+
+
 if __name__ == "__main__":
     (ROOT / "tools").mkdir(exist_ok=True)
     build_index()
     build_ordnung()
+    build_kauf()
     for t in TOOLS:
         build_tool(t)
     urls = ["/", "/bibliotheksordnung.html"] + [f'/tools/{t["slug"]}.html' for t in TOOLS]
