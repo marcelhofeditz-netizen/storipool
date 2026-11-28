@@ -28,7 +28,7 @@ function openBook(b){
  else{tabs.style.display='';pane.style.display='';bl.innerHTML=b.blurb.map(function(p){return '<p class="blurb">'+esc(p)+'</p>';}).join('');
   var T=[['lese','Leseprobe'],['hoer','Hörprobe'],['sum','Worum es geht'],['rate','Bewertungen']];
   T.forEach(function(t,i){var btn=document.createElement('button');btn.type='button';btn.className='tab';btn.setAttribute('role','tab');btn.textContent=t[1];btn.onclick=function(){sel(t[0]);};btn.dataset.k=t[0];tabs.appendChild(btn);});
-  function lock(){return '<div class="lock"><p><b>Das ganze Buch und Hörbuch</b> erscheinen mit dem Alpha-Start des Selfpublishbot.<br>Freunde und Familie bekommen es schon vorher – auf Anfrage.</p><a class="btn btn-primary" href="mailto:marcel@offmarketpool.com?subject='+encodeURIComponent('Vollversion: '+b.title)+'&body='+encodeURIComponent('Hallo Marcel, ich würde gern „'+b.title+'“ ganz lesen bzw. hören.')+'">Vollversion anfragen</a></div>';}
+  function lock(){return '<div class="lock"><p><b>Das ganze Hörbuch</b> gibt es als Download – sofort nach der Zahlung.</p><a class="btn btn-primary" href="#hoerbuecher" data-kauf>Hörbuch kaufen · 12,99 €</a></div>';}
   function sel(k){Array.prototype.forEach.call(tabs.children,function(x){x.setAttribute('aria-selected',String(x.dataset.k===k));});if(audio){audio.pause();}
    if(k==='rate'){MG.ratingPane(pane,b.id,b.title,function(){window.renderStats();});return;}
    if(k==='lese'){pane.innerHTML=b.lese?document.getElementById(b.lese).innerHTML+lock():'<div class="lock"><p>Die Leseprobe zu „'+esc(b.title)+'“ kommt in den nächsten Tagen.</p></div>'+lock();}
@@ -54,7 +54,7 @@ var cardAudio=null,cardBtn=null;
 var rb=document.getElementById('realBooks');
 mine.forEach(function(b){var el=document.createElement('div');el.className='rcard';
  el.innerHTML='<div class="cv" role="button" tabindex="0" aria-label="'+esc(b.title)+' öffnen">'+cover(b,true)+'</div><div class="bd"><span class="tag" style="align-self:flex-start;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:#15171C;background:var(--accent);border-radius:999px;padding:3px 9px;font-weight:700">'+esc(b.genre)+'</span><h3 class="serif">'+esc(b.title)+'</h3><p class="sub">'+esc(b.sub==='Roman'?'Roman von '+b.author:b.sub+' · '+b.author)+'</p>'+
- (b.hoer?'<div class="mini-play"><button type="button" aria-label="Hörprobe abspielen">'+playI+'</button><div class="t"><b>'+esc(b.hoer.title)+'</b>Hörprobe · '+esc(b.hoer.len)+'<div class="prog"><i></i></div></div></div>':'<div class="soon">Hörbuch wird gerade eingesprochen</div>')+
+ (b.hoer?'<div class="mini-play"><button type="button" aria-label="Hörprobe abspielen">'+playI+'</button><div class="t"><b>'+esc(b.hoer.title)+'</b>Hörprobe · '+esc(b.hoer.len)+'<div class="prog"><i></i></div></div></div>':'<div class="soon"><a href="#hoerbuecher">Hörbuch kaufen · 12,99 €</a></div>')+
  '<div class="rmeta">'+MG.seal(b.age)+'<span data-stat="'+esc(b.id)+'"></span></div>'+
  '<div class="acts" style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-ghost" type="button" data-o>'+(b.lese?'Leseprobe lesen':'Worum es geht')+'</button><button class="btn btn-ghost" type="button" data-r>★ Bewerten</button></div></div>';
  var open=function(){if(cardAudio)cardAudio.pause();openBook(b);};
@@ -66,6 +66,12 @@ mine.forEach(function(b){var el=document.createElement('div');el.className='rcar
    A.stopSpeak();if(cardAudio.paused)cardAudio.play();else cardAudio.pause();};
   prog.onclick=function(e){if(cardBtn===btn&&cardAudio.duration){var r=prog.getBoundingClientRect();cardAudio.currentTime=(e.clientX-r.left)/r.width*cardAudio.duration;}};}
  rb.appendChild(el);});
+
+/* ---------- Hörbuch-Kauf ---------- */
+document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('[data-kauf]');if(a&&dlg.open)dlg.close();});
+(function(){var f=new URLSearchParams(location.search).get('fehler'),el=document.getElementById('kaufFehler');if(!f||!el)return;
+ var T={zustimmung:'Bitte bestätige noch das Häkchen zum sofortigen Download.',produkt:'Bitte wähle ein Hörbuch aus.',rate:'Zu viele Versuche – bitte in ein paar Minuten noch einmal.',allgemein:'Das hat nicht geklappt – bitte noch einmal versuchen.'};
+ el.textContent=T[f]||T.allgemein;el.hidden=false;})();
 
 /* ---------- Autoren ---------- */
 var au=document.getElementById('authors');
