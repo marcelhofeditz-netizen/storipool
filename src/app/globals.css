@@ -1,0 +1,216 @@
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;color:#0a0a0a;background:#fff;line-height:1.6}
+a{color:inherit}
+.top{padding:20px 24px;border-bottom:1px solid #e5e5e5}
+.brand{font-weight:800;letter-spacing:.28em;text-decoration:none;font-size:14px}
+.box{max-width:560px;margin:0 auto;padding:56px 24px 80px;min-height:70vh}
+.eyebrow{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:#666;margin-bottom:12px}
+h1{font-size:28px;line-height:1.2;margin:0 0 14px;font-weight:800}
+p,li{font-size:15px}
+.muted{color:#666;font-size:13px}
+.btn{display:inline-block;padding:13px 20px;font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;border:1px solid #0a0a0a;background:#fff;color:#0a0a0a;cursor:pointer;text-decoration:none}
+.btn.solid{background:#0a0a0a;color:#fff}
+.row{display:flex;gap:12px;flex-wrap:wrap;margin:22px 0}
+input[type=email]{width:100%;padding:13px 14px;font-size:16px;border:1px solid #0a0a0a;margin:8px 0 14px}
+.card{border:1px solid #e5e5e5;padding:14px 16px;margin:10px 0;display:flex;justify-content:space-between;gap:12px;align-items:center}
+.ok{background:#f4f4f4;padding:12px 14px;margin:14px 0}
+.foot{border-top:1px solid #e5e5e5;padding:22px 24px;font-size:12px;color:#666;text-align:center}
+input.code{width:100%;padding:14px;font-size:28px;letter-spacing:.4em;text-align:center;border:1px solid #0a0a0a;margin:8px 0 14px;font-variant-numeric:tabular-nums}
+/* ── Kanzlei-Bereich (Fibu) ───────────────────────────────── */
+main.box:has(.kanzlei){max-width:1180px;padding-top:32px}
+.kanzlei h2{font-size:13px;letter-spacing:.2em;text-transform:uppercase;margin:34px 0 10px}
+.kanzlei h3{font-size:15px;margin:22px 0 8px}
+.knav{display:flex;flex-wrap:wrap;gap:0;border-bottom:1px solid #0a0a0a;margin:18px 0 26px}
+.knav a{padding:10px 14px;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;color:#666}
+.knav a.on{color:#0a0a0a;border-bottom:3px solid #0a0a0a}
+.ktab{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums;margin:8px 0 18px}
+.ktab th{text-align:left;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#666;border-bottom:1px solid #0a0a0a;padding:6px 8px;white-space:nowrap}
+.ktab td{border-bottom:1px solid #eee;padding:6px 8px;vertical-align:top}
+.ktab td.n,.ktab th.n{text-align:right;white-space:nowrap}
+.ktab tr.sum td{font-weight:800;border-top:1px solid #0a0a0a}
+.ktab tr.storno td{color:#999;text-decoration:line-through}
+.kform{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;margin:10px 0 18px}
+.kform label{display:flex;flex-direction:column;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#666;gap:4px}
+.kform input,.kform select,.kform textarea{font:inherit;font-size:14px;padding:8px 10px;border:1px solid #0a0a0a;background:#fff;color:#0a0a0a;text-transform:none;letter-spacing:0}
+.kform input.w4{width:90px}.kform input.w8{width:130px}.kform input.wl{width:280px}
+.kform .btn{padding:10px 16px}
+.btn.klein{padding:6px 10px;font-size:10px}
+.kgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px;margin:12px 0 22px}
+.kpi{border:1px solid #e5e5e5;padding:14px}
+.kpi b{display:block;font-size:22px;font-variant-numeric:tabular-nums}
+.kpi span{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#666}
+.warn{background:#fff4e5;border-left:3px solid #e08a00;padding:10px 14px;margin:12px 0;font-size:13px}
+.err{background:#fdecec;border-left:3px solid #c00;padding:10px 14px;margin:12px 0;font-size:13px}
+.okbox{background:#eef7ee;border-left:3px solid #2a7a2a;padding:10px 14px;margin:12px 0;font-size:13px}
+.kanzlei .card{flex-wrap:wrap}
+code.k{font-size:12px;background:#f4f4f4;padding:1px 5px}
+/* ── Web-App /app (gleich aufgebaut wie die Elsterbot-App: Chat · Belege · Konto) ── */
+body:has(.wa) .top,body:has(.wa) .foot{display:none}
+main.box:has(.wa){max-width:none;padding:0;min-height:0;margin:0}
+.wa{position:fixed;inset:0;display:flex;background:#fff;color:#000;font-family:"Helvetica Neue",Helvetica,Arial,system-ui,sans-serif}
+.wa button{font:inherit;color:inherit}
+.wa h1{font-size:28px;font-weight:800;letter-spacing:-.5px;margin:4px 0 0;line-height:1.2}
+.wa-eyebrow{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:#6b6b6b;font-weight:600}
+.wa-nav{width:220px;flex:none;border-right:1px solid #e3e3e3;display:flex;flex-direction:column;padding:18px 12px;gap:4px}
+.wa-marke{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.2em;font-size:14px;text-decoration:none;padding:4px 10px 22px}
+.wa-tab{display:flex;align-items:center;gap:12px;padding:12px 10px;border:0;background:none;cursor:pointer;font-size:12px!important;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#9a9a9a!important;text-align:left;position:relative}
+.wa-tab.an{color:#000!important;background:#f4f4f4}
+.wa-tab em{font-style:normal;margin-left:auto;font-size:10px;background:#000;color:#fff;padding:1px 6px;letter-spacing:0}
+.wa-inhalt{flex:1;min-width:0;display:flex;flex-direction:column;overflow:hidden}
+.wa-panel{flex:1;min-height:0;display:flex;flex-direction:column}
+.wa-panel[hidden]{display:none}
+.wa-chat{flex:1;min-height:0;display:flex;flex-direction:column;max-width:860px;width:100%;margin:0 auto}
+.wa-kopf{display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid #e3e3e3}
+.wa-kopf>div{flex:1}
+.wa-kopf-t{font-weight:800;font-size:18px}
+.wa-beta{font-size:10px;font-weight:800;letter-spacing:.16em;border:1px solid #000;padding:2px 6px;text-transform:uppercase}
+.wa-rund{flex:none;width:44px;height:44px;display:inline-flex;align-items:center;justify-content:center;border:0;background:none;cursor:pointer}
+.wa-rund:disabled{opacity:.35;cursor:default}
+.wa-rund.hoert{background:#c62828;color:#fff!important}
+.wa-senden{background:#000;color:#fff!important}
+.wa-log{flex:1;min-height:0;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:12px}
+.wa-leer{margin:auto 0;padding:12px 4px;max-width:560px}
+.wa-leer p{font-size:16px;color:#6b6b6b;line-height:1.45;margin:10px 0 0}
+.wa-vorschlaege{display:flex;flex-direction:column;gap:10px;margin-top:20px}
+.wa-vorschlag{border:1.5px solid #000;background:#fff;padding:13px 14px;font-size:15px!important;font-weight:600;text-align:left;cursor:pointer;display:flex;gap:8px;align-items:center}
+.wa-vorschlag:hover{background:#f4f4f4}
+.wa-vorschlag.solid{background:#000;color:#fff!important}
+.wa-m{max-width:min(88%,640px);padding:11px 14px;font-size:15px;line-height:1.5;overflow-wrap:anywhere}
+.wa-m.u{align-self:flex-end;background:#000;color:#fff;white-space:pre-wrap}
+.wa-m.a{align-self:flex-start;background:#f4f4f4}
+.wa-m p{margin:0 0 8px}.wa-m p:last-child{margin:0}.wa-m ul{margin:4px 0 8px;padding-left:20px}.wa-m h4{margin:8px 0 4px;font-size:13px;letter-spacing:.08em;text-transform:uppercase}
+.wa-m table{border-collapse:collapse;margin:6px 0;font-size:14px;width:100%}.wa-m td,.wa-m th{border-bottom:1px solid #ddd;padding:4px 6px;text-align:left}.wa-m td:last-child,.wa-m th:last-child{text-align:right;white-space:nowrap}
+.wa-m-belege{font-size:12px;opacity:.75;display:flex;gap:6px;align-items:center;margin-bottom:4px}
+.wa-denken{color:#6b6b6b;font-style:italic}
+.wa-links{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.wa-btn{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 16px;border:1.5px solid #000;background:#fff;color:#000!important;font-size:11px!important;font-weight:700;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;cursor:pointer}
+.wa-btn.solid{background:#000;color:#fff!important}
+.wa-btn.gross{min-height:50px;width:100%;font-size:12px!important;margin-top:24px}
+.wa-btn:disabled{opacity:.35;cursor:default}
+.wa-btn.hell{border-color:#fff;background:transparent;color:#fff!important}.wa-btn.hell.solid{background:#fff;color:#000!important}
+.wa-ok{border:1.5px solid #000;padding:14px;margin:0 20px 8px;display:flex;flex-direction:column;gap:10px}
+.wa-ok h4{margin:0;font-size:11px;font-weight:800;letter-spacing:.2em;text-transform:uppercase}
+.wa-ok label{display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.45;cursor:pointer}
+.wa-ok input{width:18px;height:18px;margin-top:2px;flex:none;accent-color:#000}
+.wa-empf{border:1.5px solid #000;padding:14px}.wa-empf h4{margin:0 0 6px;font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase}.wa-empf p{margin:0;font-size:14px;line-height:1.5;color:#333}
+.wa-anh{display:flex;gap:8px;padding:8px 20px 0;flex-wrap:wrap}
+.wa-anh-chip{width:52px;height:52px;border:1px solid #e3e3e3;position:relative;display:flex;align-items:center;justify-content:center}
+.wa-anh-chip img{width:50px;height:50px;object-fit:cover}
+.wa-anh-chip button{position:absolute;top:-7px;right:-7px;width:20px;height:20px;border-radius:50%;background:#000;color:#fff!important;border:0;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.wa-pdf{font-size:10px;font-weight:800;letter-spacing:.16em}
+.wa-pdf.gross{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11px}
+.wa-eingabe{display:flex;align-items:flex-end;gap:8px;padding:10px 20px;border-top:1px solid #e3e3e3}
+.wa-eingabe textarea{flex:1;min-height:44px;max-height:160px;resize:none;border:1px solid #e3e3e3;padding:11px 12px;font:16px/1.4 "Helvetica Neue",Helvetica,Arial,sans-serif;background:#fff;color:#000}
+.wa-eingabe textarea:focus{outline:none;border-color:#000}
+.wa-plus-wrap{position:relative}
+.wa-menue{position:absolute;bottom:52px;left:0;background:#fff;border:1.5px solid #000;display:flex;flex-direction:column;min-width:240px;z-index:5;box-shadow:0 8px 24px #0002}
+.wa-menue button{display:flex;gap:10px;align-items:center;padding:13px 14px;border:0;background:none;text-align:left;cursor:pointer;font-size:15px!important}
+.wa-menue button:hover{background:#f4f4f4}
+.wa-fuss{font-size:11px;color:#8a8a8a;line-height:1.45;margin:0;padding:0 20px 12px}
+.wa-fuss a{color:#555}
+.wa-belege,.wa-konto{flex:1;overflow-y:auto;padding:28px 24px 120px;max-width:860px;width:100%;margin:0 auto}
+.wa-konto{max-width:620px}
+.wa-sub{color:#6b6b6b;font-size:15px;line-height:1.45;margin:8px 0 0}
+.wa-aktionen{display:flex;gap:8px;margin:18px 0 6px}
+.wa-aktionen button{flex:1;border:1.5px solid #000;background:#fff;display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 4px;cursor:pointer;font-size:11px!important;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+.wa-aktionen button:hover{background:#f4f4f4}
+.wa-leer-t{color:#6b6b6b;text-align:center;margin-top:48px;line-height:1.45}
+.wa-raster{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-top:14px}
+.wa-kachel{border:1px solid #e3e3e3;display:flex;flex-direction:column}
+.wa-kachel.an{border:2px solid #000}
+.wa-kachel-bild{position:relative;aspect-ratio:.75;background:#f4f4f4;border:0;padding:0;cursor:pointer;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.wa-kachel-bild img{width:100%;height:100%;object-fit:cover}
+.wa-marker{position:absolute;top:6px;left:6px;background:#fff;font-size:9px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:1px 4px}
+.wa-haken{position:absolute;top:6px;right:6px;width:24px;height:24px;background:#000;color:#fff;display:flex;align-items:center;justify-content:center}
+.wa-kachel-fuss{display:flex;align-items:center;gap:2px;padding:4px 4px 4px 8px}
+.wa-kachel-fuss span{flex:1;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wa-kachel-fuss button{border:0;background:none;padding:6px;cursor:pointer;color:#6b6b6b!important}
+.wa-kachel-fuss button:hover{color:#000!important}
+.wa-leiste{position:fixed;left:244px;right:24px;bottom:20px;max-width:812px;margin:0 auto}
+.wa-leiste .wa-btn{margin:0;box-shadow:0 8px 24px #0003}
+.wa-email{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wa-status{display:flex;gap:8px;align-items:center;margin-top:12px;background:#f4f4f4;padding:12px;font-size:14px}
+.wa-konto h2{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:#6b6b6b;font-weight:600;margin:32px 0 8px}
+.wa-info{font-size:15px;color:#6b6b6b;line-height:1.45;margin:0}
+.wa-adresse{display:flex;justify-content:space-between;align-items:center;gap:12px;width:100%;border:1.5px solid #000;background:#fff;padding:12px;margin-top:12px;cursor:pointer;text-align:left}
+.wa-adresse code{font-size:14px;overflow:hidden;text-overflow:ellipsis}
+.wa-adresse span{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;flex:none}
+.wa-link{font-weight:700}
+.wa-zeile{display:flex;justify-content:space-between;padding:14px 0;border-bottom:1px solid #e3e3e3;text-decoration:none;font-size:16px}
+.wa-klein{font-size:12px;color:#6b6b6b;margin-top:20px;line-height:1.45}
+.wa-toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);background:#000;color:#fff;padding:12px 16px;font-size:14px;max-width:min(92vw,520px);z-index:30;box-shadow:0 8px 24px #0004}
+.wa-scanner{position:fixed;inset:0;background:#000;color:#fff;z-index:20;display:flex;flex-direction:column}
+.wa-scanner-kopf{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;padding-top:max(12px,env(safe-area-inset-top))}
+.wa-scanner-kopf span{font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase}
+.wa-scanner-bild{flex:1;min-height:0;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.wa-scanner-bild video{width:100%;height:100%;object-fit:contain}
+.wa-scanner-bild.blitz::after{content:"";position:absolute;inset:0;background:#fff;opacity:.6}
+.wa-rahmen{position:absolute;inset:8% 10%;border:2px solid #ffffffcc;box-shadow:0 0 0 9999px #00000055;pointer-events:none}
+.wa-scanner-fehler{text-align:center;padding:24px;display:flex;flex-direction:column;gap:16px;align-items:center}
+.wa-scanner-seiten{display:flex;gap:8px;padding:8px 14px;overflow-x:auto}
+.wa-scanner-seiten img{height:64px;border:1px solid #fff}
+.wa-scanner-fuss{display:flex;flex-direction:column;align-items:center;gap:12px;padding:14px;padding-bottom:max(20px,env(safe-area-inset-bottom))}
+.wa-scanner-fuss p{margin:0;font-size:13px;color:#bbb}
+.wa-ausloeser{width:72px;height:72px;border-radius:50%;border:4px solid #fff;background:none;padding:4px;cursor:pointer}
+.wa-ausloeser span{display:block;width:100%;height:100%;border-radius:50%;background:#fff}
+.nur-mobil{display:none!important}
+@media (max-width:760px){
+  .wa{flex-direction:column-reverse}
+  .wa-nav{width:auto;flex-direction:row;border-right:0;border-top:1px solid #e3e3e3;padding:0 0 env(safe-area-inset-bottom);gap:0}
+  .wa-marke{display:none}
+  .wa-tab{flex:1;flex-direction:column;gap:3px;padding:8px 4px 6px;font-size:10px!important;letter-spacing:.08em;align-items:center;background:none!important}
+  .wa-tab em{position:absolute;top:4px;left:calc(50% + 8px);margin:0}
+  .wa-kopf{padding:10px 16px;padding-top:max(10px,env(safe-area-inset-top))}
+  .wa-log{padding:16px}
+  .wa-eingabe{padding:8px 10px}
+  .wa-anh,.wa-fuss{padding-left:16px;padding-right:16px}
+  .wa-ok{margin:0 16px 8px}
+  .wa-fuss{display:none}
+  .wa-belege,.wa-konto{padding:20px 16px 120px;padding-top:max(20px,env(safe-area-inset-top))}
+  .wa-raster{grid-template-columns:repeat(3,1fr);gap:8px}
+  .wa-leiste{left:16px;right:16px;bottom:76px}
+  .wa-toast{bottom:150px}
+  .nur-mobil{display:flex!important}
+}
+/* Connector-Anleitung (Konto) und Hinweis im leeren Chat */
+.wa-ki-tipp{display:flex;flex-direction:column;gap:4px;width:100%;margin-top:18px;padding:14px;border:1.5px dashed #000;background:#fafafa;text-align:left;cursor:pointer;font:inherit}
+.wa-ki-tipp strong{font-size:15px}.wa-ki-tipp span{font-size:14px;color:#6b6b6b;line-height:1.4}
+.wa-ki-tipp:hover{background:#f0f0f0}
+.wa-ki-ok{display:inline-block;margin:12px 0 0;padding:6px 10px;background:#000;color:#fff;font-size:13px;font-weight:700}
+.wa-ki-tabs{display:flex;gap:0;margin:16px 0 0;border:1.5px solid #000;width:max-content}
+.wa-ki-tabs button{font:inherit;font-weight:700;font-size:14px;padding:9px 18px;background:#fff;border:0;cursor:pointer}
+.wa-ki-tabs button+button{border-left:1.5px solid #000}
+.wa-ki-tabs button.an{background:#0B0A12;color:#fff}
+.wa-ki-hinweis{font-size:14px;color:#6b6b6b;line-height:1.45;margin:12px 0 0}
+.wa-ki-schritte{margin:12px 0 0;padding-left:22px;font-size:15px;line-height:1.5}
+.wa-ki-schritte li{margin:6px 0}
+.wa-ki .wa-btn.gross{margin-top:12px}
+/* ── Web-App /app (dunkel, Akzent Grün) ───────────────────── */
+body:has(.fbapp){background:#0B0A12;color:#fff}
+body:has(.fbapp) .top,body:has(.fbapp) .foot{border-color:#262626;color:#a8a8a8}
+body:has(.fbapp) .brand{color:#fff}
+main.box:has(.fbapp){max-width:980px;padding:0 0 40px;min-height:auto}
+.fbapp{--g:#F2B544;display:flex;flex-direction:column;min-height:calc(100vh - 140px)}
+.fbnav{display:flex;border-bottom:1px solid #262626;position:sticky;top:0;background:#0B0A12;z-index:2}
+.fbnav button{flex:1;padding:16px 8px;background:none;border:0;border-bottom:3px solid transparent;color:#a8a8a8;font:700 11px/1 "Helvetica Neue",Helvetica,Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;cursor:pointer}
+.fbnav button.on{color:#fff;border-color:var(--g)}
+.fbtab{padding:24px}
+.fbchat{display:flex;flex-direction:column;height:calc(100vh - 200px);min-height:480px}
+.fbchat>div{flex:1;display:flex}
+.fbkpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1px;background:#262626;border:1px solid #262626;margin:0 0 22px}
+.fbkpi{background:#0B0A12;padding:18px}.fbkpi span{display:block;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#a8a8a8}.fbkpi b{display:block;margin-top:6px;font-size:24px;font-variant-numeric:tabular-nums}
+.fbliste{border:1px solid #262626}
+.fbzeile{display:flex;justify-content:space-between;gap:14px;align-items:center;padding:14px 16px;border-bottom:1px solid #1a1a1a}
+.fbzeile:last-child{border-bottom:0}
+.fbzeile small{display:block;color:#a8a8a8;font-size:12px;margin-top:2px}
+.fbzeile .n{font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right}
+.fbtag{display:inline-block;margin-left:8px;padding:1px 6px;border:1px solid var(--g);color:var(--g);font-size:10px;letter-spacing:.12em;text-transform:uppercase}
+.fbhin{border-left:3px solid var(--g);background:#0d0d0d;padding:12px 14px;margin:8px 0;font-size:14px}
+.fbbtn{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 20px;border:1px solid var(--g);background:var(--g);color:#000;font:700 11px/1 "Helvetica Neue",Helvetica,Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;text-decoration:none}
+.fbbtn.ghost{background:transparent;color:#fff;border-color:#fff6}
+.fbbtn.rot{background:transparent;color:#ff8a8a;border-color:#ff8a8a}
+.fbbtn:disabled{opacity:.4;cursor:default}
+.fbapp h2{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:#a8a8a8;margin:26px 0 10px;font-weight:700}
+.fbapp p{color:#ddd}
+.fbdemo{border:1px solid #ffffff33;padding:10px 14px;margin:0 0 18px;font-size:13px;color:#ddd}
+.fbcopy{display:flex;gap:8px;margin:8px 0}.fbcopy code{flex:1;background:#111;border:1px solid #262626;padding:12px;font-size:13px;overflow:auto;white-space:nowrap}

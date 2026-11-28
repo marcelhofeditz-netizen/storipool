@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /hochladen.html
+Disallow: /kauf.html
+Disallow: /app
+Disallow: /login
+Disallow: /oauth
+Sitemap: https://www.selfpublishbot.de/sitemap.xml

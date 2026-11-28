@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Deine Hörbücher – Selfpublishbot</title>
+<meta name="description" content="Download deiner gekauften Hörbücher.">
+<meta property="og:title" content="Deine Hörbücher – Selfpublishbot">
+<meta property="og:description" content="Download deiner gekauften Hörbücher.">
+<meta property="og:type" content="website">
+<link rel="canonical" href="https://www.selfpublishbot.de/kauf.html">
+<meta property="og:url" content="https://www.selfpublishbot.de/kauf.html">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%2315171C'/%3E%3Cg fill='none' stroke='%23F2B544' stroke-width='2'%3E%3Crect x='8' y='6' width='16' height='21' rx='2'/%3E%3Cpath d='M12 6v21'/%3E%3C/g%3E%3Ccircle cx='17' cy='14' r='1.5' fill='%23F2B544'/%3E%3Ccircle cx='21' cy='14' r='1.5' fill='%23F2B544'/%3E%3C/svg%3E">
+<link rel="preload" href="/assets/fonts/cormorant-garamond-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/site.css">
+<link rel="stylesheet" href="/assets/magic.css">
+<meta name="theme-color" content="#0B0A12">
+<meta name="robots" content="noindex"></head>
+<body>
+<header>
+<div class="wrap">
+<a class="logo" href="/"><svg width="30" height="30" viewBox="0 0 32 32" aria-hidden="true" fill="none" stroke="#F2B544" stroke-width="2"><rect x="7" y="5" width="18" height="23" rx="2"/><path d="M11 5v23"/><circle cx="18" cy="14" r="1.6" fill="#F2B544"/><circle cx="22" cy="14" r="1.6" fill="#F2B544"/><path d="M17 19q2.5 2 5 0"/><path d="M20 5V2"/><circle cx="20" cy="1.6" r="1.2" fill="#F2B544"/></svg><span class="serif">Selfpublishbot</span></a>
+<nav aria-label="Hauptnavigation">
+<a href="/#buecher">Das Regal</a>
+<a href="/#bestenliste">Bestenliste</a>
+<a href="/#autoren">Chronisten</a>
+<a href="/#tools">Werkzeuge</a>
+<a href="/preise.html">Preise</a>
+<a href="/connector.html">Connector</a>
+<a href="/bibliotheksordnung.html">Ordnung</a>
+<a href="/app">Meine Bücher</a>
+<a class="btn btn-primary" href="/#bot">Buch schreiben</a>
+</nav>
+</div>
+</header>
+<main class="law" style="max-width:760px;margin:0 auto;padding:56px 24px 80px">
+<h1 class="serif" style="font-size:40px;margin:0 0 8px">Deine Hörbücher</h1>
+<p id="kStatus" class="note" role="status" aria-live="polite" style="font-size:16px">Einen Moment – ich hole deine Downloads …</p>
+<div id="kList"></div>
+<p class="note" style="margin-top:28px">Die Links gelten eine Stunde und werden bei jedem Öffnen dieser Seite neu erzeugt. Den Link zu dieser Seite hast du auch per E-Mail bekommen. Fragen? <a href="mailto:marcel@offmarketpool.com">marcel@offmarketpool.com</a></p>
+</main>
+<script>
+(function(){
+var id=new URLSearchParams(location.search).get('session_id'),st=document.getElementById('kStatus'),li=document.getElementById('kList');
+function esc(t){var d=document.createElement('div');d.textContent=t;return d.innerHTML;}
+if(!id){st.textContent='Kein Kauf gefunden. Bitte nutze den Link aus deiner E-Mail.';return;}
+fetch('https://offmarketpool.de/api/buecher/download?session_id='+encodeURIComponent(id)).then(function(r){return r.json().then(function(j){return {ok:r.ok,j:j};});}).then(function(x){
+ if(!x.ok){st.textContent=x.j&&x.j.error==='nicht_bezahlt'?'Die Zahlung ist noch nicht bestätigt. Bitte lade die Seite in einer Minute neu.':'Das hat nicht geklappt – bitte lade die Seite neu.';return;}
+ st.textContent='Danke für deinen Kauf! Viel Spaß beim Hören.';
+ x.j.buecher.forEach(function(b){var h='<h2 class="serif" style="margin:28px 0 2px">'+esc(b.titel)+'</h2><p class="note">'+esc(b.untertitel)+'</p>';
+  if(!b.dateien.length){h+='<p class="note" style="margin-top:10px">Die Dateien werden gerade bereitgestellt – du bekommst eine E-Mail, sobald sie da sind.</p>';}
+  else{h+='<ul class="dl-list">'+b.dateien.map(function(f){return '<li><a href="'+esc(f.url)+'" download="'+esc(f.name)+'"><span>'+esc(f.titel)+'</span><span>⬇ Download</span></a></li>';}).join('')+'</ul>';}
+  li.insertAdjacentHTML('beforeend',h);});
+}).catch(function(){st.textContent='Keine Verbindung – bitte lade die Seite neu.';});
+})();
+</script>
+<footer>
+<div class="wrap">
+<span>© 2026 Selfpublishbot · Die Bibliothek der erzählten Leben · Dr. Hofeditz Real Estate GmbH, Hamburg</span>
+<span style="display:flex;gap:20px;flex-wrap:wrap"><a href="/#tools">Tools</a><a href="/preise.html">Preise</a><a href="/connector.html">Connector</a><a href="/bibliotheksordnung.html">Bibliotheksordnung</a><a href="/impressum.html">Impressum</a><a href="/datenschutz.html">Datenschutz</a></span>
+</div>
+</footer>
+</body>
+</html>
