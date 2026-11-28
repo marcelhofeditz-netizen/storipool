@@ -4,7 +4,8 @@ Aufruf: python3 build.py   (danach committen – die Seite ist rein statisch).""
 import json, html, pathlib
 
 ROOT = pathlib.Path(__file__).parent
-PARTS = ROOT / "src"
+PARTS = ROOT / "seiten"
+OUT = ROOT / "public"
 
 LOGO = '''<svg width="30" height="30" viewBox="0 0 32 32" aria-hidden="true" fill="none" stroke="#F2B544" stroke-width="2"><rect x="7" y="5" width="18" height="23" rx="2"/><path d="M11 5v23"/><circle cx="18" cy="14" r="1.6" fill="#F2B544"/><circle cx="22" cy="14" r="1.6" fill="#F2B544"/><path d="M17 19q2.5 2 5 0"/><path d="M20 5V2"/><circle cx="20" cy="1.6" r="1.2" fill="#F2B544"/></svg>'''
 FAVICON = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%2315171C'/%3E%3Cg fill='none' stroke='%23F2B544' stroke-width='2'%3E%3Crect x='8' y='6' width='16' height='21' rx='2'/%3E%3Cpath d='M12 6v21'/%3E%3C/g%3E%3Ccircle cx='17' cy='14' r='1.5' fill='%23F2B544'/%3E%3Ccircle cx='21' cy='14' r='1.5' fill='%23F2B544'/%3E%3C/svg%3E"
@@ -96,7 +97,7 @@ def build_index():
                "Erzähl dein Buch in einem Satz – der Selfpublishbot macht Titel, Cover, Klappentext und die erste Seite daraus. Kostenlose KI-Tools für Selfpublisher.", extra)
     doc += page + FOOT + '<script type="importmap">{"imports":{"three":"/assets/vendor/three/three.module.js","three/addons/":"/assets/vendor/three/addons/"}}</script>\n<script type="module" src="/assets/book3d.js?v=5"></script>\n<script src="/assets/covers.js"></script>\n<script src="/assets/magic.js"></script>\n<script src="/assets/app.js"></script>\n<script>\n' + (PARTS / "index.js").read_text(encoding="utf-8") + '\n</script>\n</body>\n</html>\n'
     doc = doc.replace('{{SCRIPT}}', '')
-    (ROOT / "index.html").write_text(doc, encoding="utf-8")
+    (OUT / "index.html").write_text(doc, encoding="utf-8")
 
 # ---------- Tool-Seiten ----------
 def build_tool(t):
@@ -136,7 +137,7 @@ def build_tool(t):
 </main>
 '''
     doc += FOOT + '<script src="/assets/covers.js"></script>\n<script src="/assets/magic.js"></script>\n<script src="/assets/app.js"></script>\n<script src="/assets/tools.js"></script>\n</body>\n</html>\n'
-    (ROOT / "tools" / f'{t["slug"]}.html').write_text(doc, encoding="utf-8")
+    (OUT / "tools" / f'{t["slug"]}.html').write_text(doc, encoding="utf-8")
 
 # ---------- Bibliotheksordnung ----------
 def build_ordnung():
@@ -203,7 +204,7 @@ def build_ordnung():
 """
     doc = head("Bibliotheksordnung – Selfpublishbot", "Wie die Bibliothek Bücher einordnet: Altersempfehlung ab 0, 6, 12, 16 und 18, Herkunftssiegel mit Diktat-Quote, Inhaltshinweise, was nie ins Regal kommt und wie Sterne und Bestenliste funktionieren.", "", "/bibliotheksordnung.html")
     doc += body + FOOT + '<script src="/assets/magic.js"></script>\n</body>\n</html>\n'
-    (ROOT / "bibliotheksordnung.html").write_text(doc, encoding="utf-8")
+    (OUT / "bibliotheksordnung.html").write_text(doc, encoding="utf-8")
 
 # ---------- Preise ----------
 def vormerken(paket):
@@ -287,7 +288,7 @@ def build_preise():
                "Buch mit KI kostenlos schreiben und erst beim Veröffentlichen zahlen: E-Book 29 €, Hörbuch 79 €, Komplett mit Druck 199 €, Geschenkbuch als Hardcover ab 39 €. 70 % für Autor:innen.",
                '<script type="application/ld+json">' + json.dumps(ld, ensure_ascii=False) + '</script>\n', "/preise.html")
     doc += body + FOOT + '<script src="/assets/magic.js"></script>\n</body>\n</html>\n'
-    (ROOT / "preise.html").write_text(doc, encoding="utf-8")
+    (OUT / "preise.html").write_text(doc, encoding="utf-8")
 
 # ---------- Connector ----------
 def build_connector():
@@ -296,20 +297,22 @@ def build_connector():
 <p class="eyebrow">Schreiben, wo du sowieso mit der KI sprichst</p>
 <h1 class="serif">Der Selfpublishbot-Connector</h1>
 <p>Dein Buch entsteht nicht auf dieser Website, sondern im Gespräch mit Claude oder ChatGPT. Du erzählst oder diktierst, die KI fragt nach wie ein guter Lektor, und der Connector legt alles in deiner Bibliothek ab: deine Rohtexte, die Kapitel und am Ende das Herkunftssiegel.</p>
-<div class="box"><h3>Connector-Adresse</h3><p style="margin:0"><code style="font-size:17px;color:var(--accent);word-break:break-all">https://www.selfpublishbot.de/api/mcp</code></p></div>
+<div class="box"><h3>Connector-Adresse</h3><p style="margin:0"><code style="font-size:17px;color:var(--accent);word-break:break-all">https://www.selfpublishbot.de/mcp</code></p></div>
 
 <h2 class="serif">In Claude verbinden</h2>
 <ol>
 <li>Öffne in Claude die Einstellungen und dort den Bereich für Connectoren.</li>
 <li>Wähle „Benutzerdefinierten Connector hinzufügen“, gib ihm den Namen „Selfpublishbot“ und trag die Adresse oben ein.</li>
+<li>Mit deiner E-Mail anmelden (Code per Mail, kein Passwort) und zustimmen.</li>
 <li>Starte einen neuen Chat und sag: „Ich möchte mit dem Selfpublishbot ein Buch schreiben.“</li>
 </ol>
 <h2 class="serif">In ChatGPT verbinden</h2>
-<p>In ChatGPT lassen sich eigene Connectoren in den Einstellungen unter den Apps bzw. Connectoren hinzufügen (je nach Tarif im Entwicklermodus). Adresse wie oben eintragen.</p>
+<p>In ChatGPT lassen sich eigene Connectoren in den Einstellungen unter den Apps bzw. Connectoren hinzufügen (je nach Tarif im Entwicklermodus). Adresse wie oben eintragen und mit deiner E-Mail anmelden.</p>
+<p>Lieber ohne KI-Konto? Schreib direkt in der <a href="/app">Web-App</a> – dort siehst du auch alle deine Bücher.</p>
 
 <h2 class="serif">So schreibst du</h2>
 <ol>
-<li><b>Buch anlegen.</b> Du bekommst eine Buch-ID und einen geheimen Schlüssel. Heb beide gut auf – damit schreibst du in jedem neuen Chat weiter.</li>
+<li><b>Buch anlegen.</b> Das Buch liegt in deinem Konto – in jedem neuen Chat, in der Web-App und in der App schreibst du einfach weiter. Bücher aus dem ersten Connector mit Buch-ID und Schlüssel holt die KI auf Zuruf in dein Konto.</li>
 <li><b>Erzählen oder diktieren.</b> Nutz die Spracheingabe von Claude oder ChatGPT wie ein Diktiergerät. Jede deiner Nachrichten wird unverändert als Rohtext gesichert.</li>
 <li><b>Kapitel formen.</b> Die KI ordnet, glättet und fragt nach. Je mehr deiner eigenen Sätze stehen bleiben, desto höher deine Diktat-Quote.</li>
 <li><b>Prüfen und einreichen.</b> Jederzeit „Wie ist meine Diktat-Quote?“ fragen. Zum Schluss gibst du an, wie du gearbeitet hast, und reichst das Buch bei der Bibliothek ein.</li>
@@ -324,7 +327,7 @@ def build_connector():
     doc = head("Connector – Buch schreiben mit Claude oder ChatGPT | Selfpublishbot",
                "Verbinde den Selfpublishbot mit Claude oder ChatGPT: Buch diktieren, Kapitel formen, Herkunftssiegel mit Diktat-Quote erhalten und bei der Bibliothek einreichen.", "", "/connector.html")
     doc += body + FOOT + '<script src="/assets/magic.js"></script>\n</body>\n</html>\n'
-    (ROOT / "connector.html").write_text(doc, encoding="utf-8")
+    (OUT / "connector.html").write_text(doc, encoding="utf-8")
 def build_kauf():
     body = """<main class="law" style="max-width:760px;margin:0 auto;padding:56px 24px 80px">
 <h1 class="serif" style="font-size:40px;margin:0 0 8px">Deine Hörbücher</h1>
@@ -350,22 +353,22 @@ fetch('https://offmarketpool.de/api/buecher/download?session_id='+encodeURICompo
 """
     doc = head("Deine Hörbücher – Selfpublishbot", "Download deiner gekauften Hörbücher.", '<meta name="robots" content="noindex">', "/kauf.html")
     doc += body + FOOT + "</body>\n</html>\n"
-    (ROOT / "kauf.html").write_text(doc, encoding="utf-8")
+    (OUT / "kauf.html").write_text(doc, encoding="utf-8")
 
 
 if __name__ == "__main__":
-    (ROOT / "tools").mkdir(exist_ok=True)
+    (OUT / "tools").mkdir(exist_ok=True)
     build_index()
     build_ordnung()
     build_preise()
     build_connector()
     # Algorithmus für die Supabase-Funktion spiegeln
-    src = (ROOT / "api" / "_lib" / "herkunft.js").read_text(encoding="utf-8")
+    src = (ROOT / "src" / "legacy" / "_lib" / "herkunft.js").read_text(encoding="utf-8")
     (ROOT / "supabase" / "functions" / "herkunft" / "herkunft.js").write_text(src.replace("module.exports = { pruefe, woerter, sprechwert, NAMEN, STUFEN };", "export { pruefe, woerter, sprechwert, NAMEN, STUFEN };"), encoding="utf-8")
     build_kauf()
     for t in TOOLS:
         build_tool(t)
     urls = ["/", "/preise.html", "/connector.html", "/bibliotheksordnung.html"] + [f'/tools/{t["slug"]}.html' for t in TOOLS]
-    (ROOT / "sitemap.xml").write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + "".join(f"<url><loc>{DOMAIN}{u}</loc></url>\n" for u in urls) + "</urlset>\n", encoding="utf-8")
-    (ROOT / "robots.txt").write_text(f"User-agent: *\nAllow: /\nSitemap: {DOMAIN}/sitemap.xml\n", encoding="utf-8")
+    (OUT / "sitemap.xml").write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + "".join(f"<url><loc>{DOMAIN}{u}</loc></url>\n" for u in urls) + "</urlset>\n", encoding="utf-8")
+    (OUT / "robots.txt").write_text(f"User-agent: *\nAllow: /\nDisallow: /hochladen.html\nDisallow: /kauf.html\nDisallow: /app\nDisallow: /login\nDisallow: /oauth\nSitemap: {DOMAIN}/sitemap.xml\n", encoding="utf-8")
     print("ok:", 1 + len(TOOLS), "Seiten")
