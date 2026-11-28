@@ -43,6 +43,7 @@ def head(title, desc, extra="", path="/"):
 <a href="/preise.html">Preise</a>
 <a href="/connector.html">Connector</a>
 <a href="/bibliotheksordnung.html">Ordnung</a>
+<a href="/app">Meine Bücher</a>
 <a class="btn btn-primary" href="/#bot">Buch schreiben</a>
 </nav>
 </div>

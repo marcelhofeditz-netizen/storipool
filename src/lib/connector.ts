@@ -1,4 +1,4 @@
-// Nur serverseitig – MCP-Server von Selfpublishbot (gleiches Gerüst wie Elsterbot/Finanzenbot).
+// Nur serverseitig – MCP-Server von Selfpublishbot (gleiches Gerüst wie Elsterbot/Selfpublishbot).
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 import { createServiceClient } from './supabase';
